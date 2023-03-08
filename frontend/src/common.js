@@ -1,3 +1,8 @@
+import { BACKEND_PORT } from "./config.js"
+
+// Request URL
+export const URL = "http://localhost:" + BACKEND_PORT
+
 // Clear all the elements on current page and ready for render a new page
 export function clearPage() {
     const container = document.getElementById("container")
@@ -19,4 +24,29 @@ export function invalid(input) {
 export function valid(input) {
     input.classList.remove("is-invalid")
     input.classList.add("is-valid")
+}
+
+export function validEmail(email) {
+    return /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)
+}
+
+export function displayAlert(content) {
+    if (document.getElementById("alert") == null) {
+        document.getElementById("container").appendChild(template("alert-template"))
+    }
+    document.getElementById("alert-body").textContent = content
+    new bootstrap.Modal(document.getElementById("alert"), {}).show()
+}
+
+export function saveToken(token, userId) {
+    window.localStorage.setItem("token", token)
+    window.localStorage.setItem("userId", userId)
+}
+
+function getToken() {
+    return window.localStorage.getItem("token")
+}
+
+export function header(auth=true) {
+    return auth ? { "Content-Type": "application/json", "Authorization": getToken() } : { "Content-Type": "application/json" }
 }
