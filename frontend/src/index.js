@@ -4,7 +4,7 @@ import * as common from "./common.js";
 export function render() {
     if (window.localStorage.getItem("token") == null) {
         console.log("No token")
-        renderLogin()
+        window.location.hash = "#login"
         return
     }
     common.clearPage()

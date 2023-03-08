@@ -1,11 +1,10 @@
 import * as common from "./common.js"
 import { LoginDTO, RegisterDTO } from "./entity.js"
-import { render } from "./index.js"
 
 export function renderLogin() {
     common.clearPage()
     document.body.appendChild(common.template("login-template"))
-    document.getElementById("sign-up").addEventListener("click", renderRegister)
+    document.getElementById("sign-up").addEventListener("click", () => { window.location.hash = "#register" })
 
     // Every time the login page is rendered, register all the listeners
     const email = document.getElementById("email")
@@ -18,10 +17,10 @@ export function renderLogin() {
     })
 }
 
-function renderRegister() {
+export function renderRegister() {
     common.clearPage()
     document.body.appendChild(common.template("register-template"))
-    document.getElementById("sign-in").addEventListener("click", renderLogin)
+    document.getElementById("sign-in").addEventListener("click", () => { window.location.hash = "#login" })
 
     // Every time the register page is rendered, register all the listeners
     const email = document.getElementById("email")
@@ -88,7 +87,7 @@ function login(email, password) {
             throw new Error(res.error)
         }
         common.saveToken(res.token, res.userId)
-        render()
+        window.location.hash = ""
     }).catch(error => {
         common.displayAlert(error.message)
     })
@@ -122,7 +121,7 @@ function register(email, name, password, confirmPassword) {
             throw new Error(res.error)
         }
         common.saveToken(res.token, res.userId)
-        render()
+        window.location.hash = ""
     }).catch(error => {
         common.displayAlert(error.message)
     })

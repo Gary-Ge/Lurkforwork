@@ -4,4 +4,19 @@ import { fileToDataUrl } from './helpers.js';
 import * as login from "./login.js";
 import { render } from "./index.js";
 
-render()
+window.addEventListener("hashchange", displayPage)
+displayPage()
+
+function displayPage() {
+    switch(window.location.hash) {
+        case "#login":
+            login.renderLogin()
+            break
+        case "#register":
+            login.renderRegister()
+            break
+        default:
+            render()
+            break
+    }
+}
