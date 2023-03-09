@@ -16,10 +16,19 @@ div.form-container {
     height: auto;
 }
 
+div.feed-container {
+    max-width: 1000px;
+    background-color: #ffffff;
+}
+
 h3 {
     text-align: center;
 }
 
 button.full {
     width: 100%;
+}
+
+strong {
+    font-size: 1rem;
 }

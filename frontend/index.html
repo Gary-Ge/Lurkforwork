@@ -95,8 +95,22 @@
 </template>
 
 <template id="index-template">
-    <div class="container h-100 d-flex align-items-center justify-content-center" id="container">
-        <h1>Successfully Logged In</h1>
+    <div class="container d-flex h-100 align-items-center justify-content-center" id="container">
+        <div class="container h-75 rounded-4 shadow-sm feed-container overflow-y-auto">
+            <div class="d-flex text-muted border-bottom">
+                <img class="rounded mt-4" width="48" height="48" src="assets/2.svg">
+                <p class="small p-3 m-0">
+                    <a class="text-decoration-none" href="#profile=10">@Betty</a> - 11h5m ago<br>
+                    <strong>Hello Kitty Director</strong><br>
+                    Dedicated technical wizard with a passion and interest in human relationships<br>
+                    <small>Start on 2011-10-05</small><br>
+                    <button class="btn btn-sm p-0" id="like">
+                        <img width="24" height="24" src="assets/like.svg" id="like-image">
+                    </button><small> <a class="text-decoration-none" href="#like=3">12</a></small>
+                    <button class="btn btn-sm p-0 m-1"><img width="24" height="24" src="assets/comment.svg"></button><small><a class="text-decoration-none" href="#comment=3">15</a></small>
+                </p>
+            </div>
+        </div>
     </div>
 </template>
 
