@@ -3,8 +3,10 @@ import { LoginDTO, RegisterDTO } from "./entity.js"
 
 export function renderLogin() {
     common.clearPage()
+    common.removeToken()
     document.body.appendChild(common.template("login-template"))
     document.getElementById("sign-up").addEventListener("click", () => { window.location.hash = "#register" })
+    common.active("nav-login")
 
     // Every time the login page is rendered, register all the listeners
     const email = document.getElementById("email")
@@ -21,6 +23,7 @@ export function renderRegister() {
     common.clearPage()
     document.body.appendChild(common.template("register-template"))
     document.getElementById("sign-in").addEventListener("click", () => { window.location.hash = "#login" })
+    common.active("nav-register")
 
     // Every time the register page is rendered, register all the listeners
     const email = document.getElementById("email")

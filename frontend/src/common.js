@@ -47,6 +47,19 @@ function getToken() {
     return window.localStorage.getItem("token")
 }
 
+export function removeToken() {
+    window.localStorage.removeItem("token")
+    window.localStorage.removeItem("userId")
+}
+
 export function header(auth=true) {
     return auth ? { "Content-Type": "application/json", "Authorization": getToken() } : { "Content-Type": "application/json" }
+}
+
+export function active(id) {
+    for (let element of document.getElementsByClassName("nav-link")) {
+        element.id === id ? element.classList.add("active") : element.classList.remove("active")
+    }
+    const login = document.getElementById("nav-login")
+    login.textContent = getToken() == null ? "Login" : "Logout"
 }
