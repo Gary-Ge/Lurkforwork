@@ -125,7 +125,5 @@ function register(email, name, password, confirmPassword) {
         }
         common.saveToken(res.token, res.userId)
         window.location.hash = ""
-    }).catch(error => {
-        common.displayAlert(error.message)
-    })
+    }).catch(error => common.displayAlert(error.message))
 }
