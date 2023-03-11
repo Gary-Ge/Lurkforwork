@@ -44,7 +44,7 @@ export function displayModal(id, like=true) {
     }
     document.getElementById("container").appendChild(template("modal-template"))
     // document.getElementById("modal-body").textContent = content
-    document.getElementById("modal-title").textContent = like ? "likers" : "comments"
+    document.getElementById("modal-title").textContent = like ? "Likers" : "Comments"
     const modalBody = document.getElementById("modal-body")
     fetch(`${URL}/job/feed?start=0`, {
         method: "GET",
@@ -53,13 +53,21 @@ export function displayModal(id, like=true) {
         if (res.error != null) {
             throw new Error(res.error)
         }
-        console.log(res)
         for (let r of res) {
             if (r.id == id) {
-                for (let user of r.likes) {
-                    const liker = createALabel("text-decoration-none", `#profile=${user.userId}`, `@${user.userName}`)
-                    modalBody.appendChild(liker)
-                    modalBody.appendChild(document.createElement("br"))
+                if (like) {
+                    for (let user of r.likes) {
+                        const liker = createALabel("text-decoration-none", `#profile=${user.userId}`, `@${user.userName}`)
+                        modalBody.appendChild(liker)
+                        modalBody.appendChild(document.createElement("br"))
+                    }
+                } else {
+                    for (let comment of r.comments) {
+                        const commenter = createALabel("text-decoration-none", `#profile=${comment.userId}`, `@${comment.userName}`)
+                        modalBody.appendChild(commenter)
+                        const content = createLabel("p", "small p-1 m-0 border-bottom", null, comment.comment)
+                        modalBody.appendChild(content)
+                    }
                 }
                 break
             }

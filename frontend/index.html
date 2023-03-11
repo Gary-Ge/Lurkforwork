@@ -95,7 +95,23 @@
 </template>
 
 <template id="index-template">
-    <div class="container d-flex h-100 align-items-center justify-content-center" id="container">
+    <div class="container d-flex h-100 align-items-center justify-content-center" id="container"></div>
+</template>
+
+<template id="profile-template">
+    <div class="container h-100 d-flex flex-column align-items-center justify-content-center" id="container">
+        <div class="container rounded-4 shadow-sm feed-container">
+            <div class="d-flex text-muted">
+                <img width="48" height="48" class="rounded mt-4" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==" id="img">
+                <p class="p-3 m-0 w-75 text-break" id="info"></p>
+                <div class="container d-flex align-items-center justify-content-center w-25">
+                    <button class="btn btn-outline-primary p-1 rounded-4 border-2" id="watch">Watch</button>
+                </div>
+            </div>
+        </div>
+        <div class="container overflow-y-auto h-50 feed-container rounded-4 shadow-sm m-4" id="jobs">
+
+        </div>
     </div>
 </template>
 
@@ -129,6 +145,13 @@
                 </div>
             </div>
         </div>
+    </div>
+</template>
+
+<template id="not-found-template">
+    <div class="container h-100 d-flex flex-column align-items-center justify-content-center" id="container">
+        <h1>Profile Not Found</h1>
+        <button class="btn btn-primary" id="home">Home</button>
     </div>
 </template>
 

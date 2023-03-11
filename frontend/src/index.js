@@ -40,17 +40,27 @@ function changeImage(id) {
 
 function renderList(res) {
     const listContainer = common.createLabel("div", "container h-75 rounded-4 shadow-sm feed-container overflow-y-auto")
+
+    const fetches = []
     for (let r of res) {
-        fetch(`${common.URL}/user?userId=${r.creatorId}`, {
-            method: "GET",
-            headers: common.header()
-        }).then(res => res.json()).then(res => {
-            if (res.error != null) {
-                throw new Error(res.error)
-            }
-            listContainer.appendChild(renderItem(r, res.name))
-        }).catch (error => common.displayAlert(error.message))
+        fetches.push(new Promise(function (resolve, reject) {
+            fetch(`${common.URL}/user?userId=${r.creatorId}`, {
+                method: "GET",
+                headers: common.header()
+            }).then(res => res.json()).then(res => {
+                if (res.error != null) {
+                    throw new Error(res.error)
+                }
+                resolve(res)
+            }).catch (error => reject(error))
+        }))
     }
+    Promise.all(fetches).then((userRes) => { 
+        if (userRes.length != res.length) throw new Error("Bad Result")
+        for (let i in userRes) {
+            listContainer.appendChild(renderItem(res[i], userRes[i].name))
+        }
+    }).catch((error) => common.displayAlert(error.message))
     document.getElementById("container").appendChild(listContainer)
 }
 
@@ -93,8 +103,11 @@ function renderItem(r, name) {
     like.appendChild(likeImage)
     // Create the like count holder
     const likeCountHolder = common.createLabel("small")
-    const likeCount = common.createALabel("text-decoration-none", null, r.likes.length)
-    likeCount.addEventListener("click", () => { common.displayModal(r.id) })
+    const likeCount = common.createALabel("text-decoration-none", "#", r.likes.length)
+    likeCount.addEventListener("click", () => { 
+        common.displayModal(r.id) 
+        return false
+    })
     likeCountHolder.appendChild(likeCount)
     p.appendChild(like)
     p.appendChild(likeCountHolder)
@@ -106,7 +119,11 @@ function renderItem(r, name) {
     comment.appendChild(commentImage)
     // Create the comment count holder
     const commentCountHolder = common.createLabel("small")
-    const commentCount = common.createALabel("text-decoration-none", "#comment=3", r.comments.length)
+    const commentCount = common.createALabel("text-decoration-none", "#", r.comments.length)
+    commentCount.addEventListener("click", () => { 
+        common.displayModal(r.id, false) 
+        return false
+    })
     commentCountHolder.appendChild(commentCount)
     p.appendChild(comment)
     p.appendChild(commentCountHolder)
@@ -114,8 +131,8 @@ function renderItem(r, name) {
     // Create the image of job
     const image = common.createImage(r.image, 48, 48, null, "rounded mt-4")
 
-    // Create the container containint the information of job
-    const infoContainer = common.createLabel("div", "d-flex text-muted border-bottom")
+    // Create the container containing the information of job
+    const infoContainer = common.createLabel("div", "d-flex text-muted border-bottom text-break")
     infoContainer.appendChild(image)
     infoContainer.appendChild(p)
 
