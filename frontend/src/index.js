@@ -23,19 +23,34 @@ export function render() {
     common.active("nav-home")
 }
 
-function changeImage(id) {
-    const image = document.getElementById(`like-${id}`)
-    const like = new LikeDTO(id, image.src.endsWith("assets/like.svg") ? true : false)
+function liking(id, image, button, likeCount) {
+    let like = button.name == "liked" ? false : true
     fetch(`${common.URL}/job/like`, {
         method: "PUT",
         headers: common.header(),
-        body: JSON.stringify(like)
+        body: JSON.stringify(new LikeDTO(id, like))
     }).then(res => res.json()).then(res => {
         if (res.error != null) {
             throw new Error(res.error)
         }
+        image.src = like ? "assets/liked.svg" : "assets/like.svg"
+        button.name = like ? "liked" : "like"
+        updateLike(id, likeCount)
     }).catch(error => common.displayAlert(error.message))
-    image.src = image.src.endsWith("assets/like.svg") ? "assets/liked.svg" : "assets/like.svg"
+}
+
+function updateLike(id, likeCount) {
+    fetch(`${common.URL}/job/feed?start=0`, {
+        method: "GET",
+        headers: common.header(),
+    }).then(res => res.json()).then(res => {
+        if (res.error != null) {
+            throw new Error(res.error)
+        }
+        for (let r of res) {
+            if (r.id == id) likeCount.textContent = r.likes.length
+        }
+    }).catch(error => common.displayAlert(error.message))
 }
 
 function renderList(res) {
@@ -61,6 +76,10 @@ function renderList(res) {
             listContainer.appendChild(renderItem(res[i], userRes[i].name))
         }
     }).catch((error) => common.displayAlert(error.message))
+    const titleContainer = common.createLabel("div", "container rounded-4 shadow-sm mb-2 feed-container d-flex align-items-center justify-content-center")
+    const title = common.createLabel("h5", "p-2 m-0", null, "Recently Updated Jobs")
+    titleContainer.appendChild(title)
+    document.getElementById("container").appendChild(titleContainer)
     document.getElementById("container").appendChild(listContainer)
 }
 
@@ -88,22 +107,25 @@ function renderItem(r, name) {
     p.appendChild(start)
     p.appendChild(document.createElement("br"))
 
-    // Create the like button
-    const like = common.createLabel("button", "btn btn-sm p-0")
-    like.addEventListener("click", () => { changeImage(r.id) })
     // Create the like image
-    let found = false;
+    let liked = false;
     for (let liker of r.likes) {
         if (liker.userId == common.getUserId()) {
-            found = true
+            liked = true
             break
         }
     }
-    const likeImage = common.createImage(found ? "assets/liked.svg" : "assets/like.svg", 24, 24, `like-${r.id}`)
+    const likeImage = common.createImage(liked ? "assets/liked.svg" : "assets/like.svg", 24, 24, null)
+
+    // Create the like button
+    const like = common.createLabel("button", "btn btn-sm p-0")
+    like.name = liked ? "liked" : "like"
+    
     like.appendChild(likeImage)
     // Create the like count holder
     const likeCountHolder = common.createLabel("small")
     const likeCount = common.createALabel("text-decoration-none", "#", r.likes.length)
+    like.addEventListener("click", () => { liking(r.id, likeImage, like, likeCount) })
     likeCount.addEventListener("click", () => { 
         common.displayModal(r.id) 
         return false

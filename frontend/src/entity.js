@@ -19,3 +19,16 @@ export class LikeDTO {
         this.turnon = turnon
     }
 }
+
+export class WatchDTO {
+    constructor(email, turnon) {
+        this.email = email
+        this.turnon = turnon
+    }
+}
+
+export class UpdateDTO {
+    constructor(email, name, password, image) {
+        
+    }
+}

@@ -40,7 +40,7 @@ export function renderRegister() {
     })
 }
 
-function checkEmail(input, mode=false) {
+export function checkEmail(input, mode=false) {
     if (input.value === "" || !common.validEmail(input.value)) {
         common.invalid(input)
         return false
@@ -50,7 +50,7 @@ function checkEmail(input, mode=false) {
     }
 }
 
-function checkNotNull(input, mode=false) {
+export function checkNotNull(input, mode=false) {
     if (input.value === "") {
         common.invalid(input)
         return false

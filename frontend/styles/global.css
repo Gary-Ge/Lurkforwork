@@ -21,6 +21,10 @@ div.feed-container {
     background-color: #ffffff;
 }
 
+div.watchee-container {
+    height: 10%;
+}
+
 h3 {
     text-align: center;
 }

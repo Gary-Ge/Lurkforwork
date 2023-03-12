@@ -94,22 +94,61 @@
     </div>
 </template>
 
+<template id="update-profile-template">
+    <div class="container h-100 d-flex align-items-center justify-content-center" id="container">
+        <div class="container form-container p-4 rounded-4 shadow-sm">
+            <form id="form">
+                <h3 class="text-mute mb-3">Update Profile</h3>
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control" id="email" placeholder="Email">
+                    <label for="email">Email Address</label>
+                    <div class="invalid-feedback">Please input a valid email address</div>
+                    <div class="valid-feedback" id="valid-email"></div>
+                </div>
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control" id="name" placeholder="Name">
+                    <label for="name">Name</label>
+                    <div class="invalid-feedback">Please input a name</div>
+                    <div class="valid-feedback" id="valid-name"></div>
+                </div>
+                <div class="form-floating mb-3">
+                    <input type="password" class="form-control" id="password" placeholder="Password">
+                    <label for="password">Password</label>
+                    <div class="invalid-feedback">Please input a password</div>
+                    <div class="valid-feedback" id="valid-password"></div>
+                </div>
+                <div class="form-control mb-3">
+                    <label class="mb-1" for="image">Image</label>
+                    <input type="file" class="form-control" id="image" name="">
+                    <div class="invalid-feedback" id="invalid-image"></div>
+                    <div class="valid-feedback text-wrap" id="valid-image"></div>
+                    <img class="mt-2 rounded" width="48" height="48" src="assets/default-icon.svg" id="img-display">
+                </div>
+                <button type="submit" class="btn btn-primary mb-3 full" id="update">Update</button>
+            </form>
+        </div>
+    </div>
+</template>
+
 <template id="index-template">
-    <div class="container d-flex h-100 align-items-center justify-content-center" id="container"></div>
+    <div class="container d-flex h-100 align-items-center justify-content-center flex-column" id="container"></div>
 </template>
 
 <template id="profile-template">
     <div class="container h-100 d-flex flex-column align-items-center justify-content-center" id="container">
-        <div class="container rounded-4 shadow-sm feed-container">
+        <div class="container rounded-4 shadow-sm feed-container mb-1">
             <div class="d-flex text-muted">
-                <img width="48" height="48" class="rounded mt-4" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==" id="img">
+                <img width="48" height="48" class="rounded mt-4" id="user-img">
                 <p class="p-3 m-0 w-75 text-break" id="info"></p>
                 <div class="container d-flex align-items-center justify-content-center w-25">
                     <button class="btn btn-outline-primary p-1 rounded-4 border-2" id="watch">Watch</button>
                 </div>
             </div>
         </div>
-        <div class="container overflow-y-auto h-50 feed-container rounded-4 shadow-sm m-4" id="jobs">
+        <div class="container rounded-4 shadow-sm mb-1 feed-container d-flex align-items-center justify-content-center mt-1">
+            <h5 class="p-2 m-0" id="title">His/Her Posted Jobs</h5>
+        </div>
+        <div class="container overflow-y-auto h-50 feed-container rounded-4 shadow-sm" id="jobs">
 
         </div>
     </div>
@@ -150,7 +189,7 @@
 
 <template id="not-found-template">
     <div class="container h-100 d-flex flex-column align-items-center justify-content-center" id="container">
-        <h1>Profile Not Found</h1>
+        <h1 id="message">Profile Not Found</h1>
         <button class="btn btn-primary" id="home">Home</button>
     </div>
 </template>

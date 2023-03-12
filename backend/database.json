@@ -40,16 +40,13 @@
       "email": "augustine@email.com",
       "name": "Augustine",
       "password": "august",
-      "watcheeUserIds": {
-        "65687": true
-      }
+      "watcheeUserIds": {}
     },
     "97467": {
       "email": "james@email.com",
       "name": "James",
       "password": "betty",
       "watcheeUserIds": {
-        "65687": true,
         "95112": true
       }
     }
@@ -63,7 +60,9 @@
       "start": "2011-10-05T14:48:00.000Z",
       "description": "Dedicated technical wizard with a passion and interest in human relationships",
       "createdAt": "2023-03-10T02:30:15.850Z",
-      "likes": {},
+      "likes": {
+        "65687": true
+      },
       "comments": [
         {
           "userId": "65687",
@@ -107,6 +106,7 @@
       "description": "Dedicated technical wizard with a passion and interest in human relationshipsDedicated technical wizard with a passion and interest in human relationshipsDedicated technical wizard with a passion and interest in human relationships",
       "createdAt": "2023-03-07T02:30:15.850Z",
       "likes": {
+        "65687": true,
         "95112": true
       },
       "comments": [
@@ -128,9 +128,7 @@
       "start": "2011-10-05T14:48:00.000Z",
       "description": "Dedicated technical wizard with a passion and interest in human relationships Dedicated technical wizard with a passion and interest in human relationships Dedicated technical wizard with a passion and interest in human relationships",
       "createdAt": "2023-03-09T02:30:15.850Z",
-      "likes": {
-        "65687": true
-      },
+      "likes": {},
       "comments": [
         {
           "userId": "65687",

@@ -9,6 +9,8 @@ export function clearPage() {
     if (container != null) {
         container.remove()
     }
+    const modals = document.getElementsByClassName("modal-backdrop")
+    for (let item of modals) item.remove()
 }
 
 export function template(id) {
@@ -76,6 +78,8 @@ export function displayModal(id, like=true) {
 
     new bootstrap.Modal(document.getElementById("modal"), {}).show()
 }
+
+
 
 export function saveToken(token, userId) {
     window.localStorage.setItem("token", token)
