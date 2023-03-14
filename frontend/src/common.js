@@ -31,6 +31,10 @@ export function valid(input) {
 export function validEmail(email) {
     return /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)
 }
+export function newvalidEmail(email) {
+    return (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email))||email == ""
+}
+
 
 export function displayAlert(content) {
     if (document.getElementById("alert") == null) {

@@ -28,7 +28,11 @@ export class WatchDTO {
 }
 
 export class UpdateDTO {
-    constructor(email, name, password, image) {
+    constructor(email, password, name, image) {
+            this.email=email
+            this.password=password
+            this.name=name
+            this.image=image
         
     }
 }

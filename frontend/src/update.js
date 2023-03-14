@@ -2,6 +2,7 @@ import * as common from "./common.js"
 import { renderNotFound, renderProfile } from "./profile.js"
 import { checkEmail, checkNotNull } from "./login.js"
 import { fileToDataUrl } from "./helpers.js"
+import { UpdateDTO } from "./entity.js"
 
 export function renderUpdate() {
     if (window.localStorage.getItem("token") == null) {
@@ -58,7 +59,7 @@ function renderInfo(res) {
 
     document.getElementById("update").addEventListener("click", function(event) { 
         event.preventDefault()
-        update(email, name, password, image)
+        update(res,email, name, password, image)
      })
 }
 
@@ -84,21 +85,30 @@ function parseFile(image) {
     })
 }
 
-function update(email, name, password, image) {
-    if (!checkEmail(email)) {
-        common.displayAlert("Please input a valid email address")
-        return
-    }
-    if (!checkNotNull(name)) {
-        common.displayAlert("Please input a name")
-        return
-    }
-    if (!checkNotNull(password)) {
-        common.displayAlert("Please input a password")
+function update(res,email, name, password, image) {
+    console.log(common.newvalidEmail(email.value))
+    if (!common.newvalidEmail(email.value)) {
+        common.invalid(email)
         return
     }
     if (image.classList.contains("is-invalid")) {
         common.displayAlert(document.getElementById("invalid-image").textContent)
         return
     }
+    if (email.value == res.email || email.value == "" || email.value == null) {
+        email=""
+    }
+    if (password.value == res.password || password.value == "" || password.value == null) {
+        password=""
+    }
+    fetch(`${common.URL}/user`, {
+        method: "PUT",
+        headers: common.header(),
+        body: JSON.stringify(new UpdateDTO(email.value, password.value, name.value,image.name))
+    }).then(res => res.json()).then(res => {
+        if (res.error != null) {
+            throw new Error(res.error)
+        }
+        window.location.hash = "#profile"
+    }).catch(error => common.displayAlert(error.message))
 }
