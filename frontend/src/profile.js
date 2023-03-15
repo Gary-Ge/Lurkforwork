@@ -53,10 +53,13 @@ function renderHeader(res, mine) {
     p.appendChild(small)
 
     const button = document.getElementById("watch")
+    const button_add = document.getElementById("addjob")
     if (mine) {
         button.textContent = "Update"
         button.addEventListener("click", () => { window.location.hash = "#update" })
+        button_add.addEventListener("click", () => { window.location.hash = "#addjob" })
     } else {
+        button_add.parentNode.removeChild(button_add);
         let watched = false;
         for (let i of res.watcheeUserIds) {
             if (i == common.getUserId()) {

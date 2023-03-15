@@ -6,6 +6,7 @@ import { renderProfile } from "./profile.js";
 import { render } from "./index.js";
 import * as common from "./common.js"
 import { renderUpdate } from './update.js';
+import { renderAdd } from './addjob.js';
 
 window.addEventListener("hashchange", displayPage)
 displayPage()
@@ -27,6 +28,9 @@ function displayPage() {
             break
         case hash == "#update":
             renderUpdate()
+            break
+        case hash == "#addjob":
+            renderAdd()
             break
         default:
             render()
