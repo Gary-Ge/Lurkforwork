@@ -83,8 +83,6 @@ export function displayModal(id, like=true) {
     new bootstrap.Modal(document.getElementById("modal"), {}).show()
 }
 
-
-
 export function saveToken(token, userId) {
     window.localStorage.setItem("token", token)
     window.localStorage.setItem("userId", userId)

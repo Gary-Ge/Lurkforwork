@@ -46,6 +46,10 @@ function renderHeader(res, mine) {
     p.appendChild(document.createElement("br"))
 
     const a = common.createALabel("text-decoration-none", "#", `Watchees: ${res.watcheeUserIds.length}`)
+    a.addEventListener("click", function(event) {
+        event.preventDefault()
+        displayWatchees(res.watcheeUserIds)
+    })
     p.appendChild(a)
     p.appendChild(document.createElement("br"))
 
@@ -53,13 +57,13 @@ function renderHeader(res, mine) {
     p.appendChild(small)
 
     const button = document.getElementById("watch")
-    const button_add = document.getElementById("addjob")
     if (mine) {
         button.textContent = "Update"
         button.addEventListener("click", () => { window.location.hash = "#update" })
-        button_add.addEventListener("click", () => { window.location.hash = "#addjob" })
+        const buttonAdd = common.createLabel("button", "btn btn-outline-primary rounded-4 border-2 mt-2 profile-button", null, "Add Job")
+        document.getElementById("buttons").appendChild(buttonAdd)
+        buttonAdd.addEventListener("click", () => { window.location.hash = "#addjob" })
     } else {
-        button_add.parentNode.removeChild(button_add);
         let watched = false;
         for (let i of res.watcheeUserIds) {
             if (i == common.getUserId()) {
@@ -149,4 +153,42 @@ function updateWachees(id, watchees) {
         }
         watchees.textContent = `Watchees: ${res.watcheeUserIds.length}`
     }).catch(error => common.displayAlert(error.message))
+}
+
+function displayWatchees(watcheeUserIds) {
+    if (document.getElementById("modal") != null) {
+        document.getElementById("modal").remove()
+    }
+    document.getElementById("container").appendChild(common.template("modal-template"))
+    document.getElementById("modal-title").textContent = "Watchees"
+    const modalBody = document.getElementById("modal-body")
+    const fetches = []
+    for (let id of watcheeUserIds) {
+        fetches.push(new Promise(function (resolve, reject) {
+            fetch(`${common.URL}/user?userId=${id}`, {
+                method: "GET",
+                headers: common.header()
+            }).then(res => res.json()).then(res => {
+                if (res.error != null) {
+                    throw new Error(res.error)
+                }
+                resolve(res)
+            }).catch(error => reject(error))
+        }))
+    }
+    Promise.all(fetches).then(userRes => { 
+        if (userRes.length != watcheeUserIds.length) throw new Error("Bad Result")
+        for (let i in userRes) {
+            const watchee = common.createALabel("text-decoration-none", `#profile=${userRes[i].id}`, `@${userRes[i].name}`)
+            modalBody.appendChild(watchee)
+            modalBody.appendChild(document.createElement("br"))
+        }
+    }).catch((error) => common.displayAlert(error.message))
+
+    new bootstrap.Modal(document.getElementById("modal"), {}).show()
+
+}
+
+function renderWatchees(watcheeUserIds, modalBody) {
+
 }

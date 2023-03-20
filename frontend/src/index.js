@@ -70,7 +70,7 @@ function renderList(res) {
             }).catch (error => reject(error))
         }))
     }
-    Promise.all(fetches).then((userRes) => { 
+    Promise.all(fetches).then(userRes => { 
         if (userRes.length != res.length) throw new Error("Bad Result")
         for (let i in userRes) {
             listContainer.appendChild(renderItem(res[i], userRes[i].name))
@@ -126,7 +126,8 @@ function renderItem(r, name) {
     const likeCountHolder = common.createLabel("small")
     const likeCount = common.createALabel("text-decoration-none", "#", r.likes.length)
     like.addEventListener("click", () => { liking(r.id, likeImage, like, likeCount) })
-    likeCount.addEventListener("click", () => { 
+    likeCount.addEventListener("click", function(event) {
+        event.preventDefault()
         common.displayModal(r.id) 
         return false
     })
@@ -142,7 +143,8 @@ function renderItem(r, name) {
     // Create the comment count holder
     const commentCountHolder = common.createLabel("small")
     const commentCount = common.createALabel("text-decoration-none", "#", r.comments.length)
-    commentCount.addEventListener("click", () => { 
+    commentCount.addEventListener("click", function(event) {
+        event.preventDefault()
         common.displayModal(r.id, false) 
         return false
     })

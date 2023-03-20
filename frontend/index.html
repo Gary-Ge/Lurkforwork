@@ -98,6 +98,43 @@
     </div>
 </template>
 
+<template id="add-job-template">
+    <div class="container h-100 d-flex align-items-center justify-content-center" id="container">
+        <div class="container form-container p-4 rounded-4 shadow-sm">
+            <form id="form">
+                <h3 class="text-mute mb-3">Post New Job</h3>
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control" id="title" placeholder="Title">
+                    <label for="title">Job Title</label>
+                    <div class="invalid-feedback">Please input a title</div>
+                    <div class="valid-feedback" id="valid-title"></div>
+                </div>
+                
+                <div class="container mb-3 p-0">
+                    <textarea class="form-control" rows="5" id="description" placeholder="Description"></textarea>
+                    <div class="invalid-feedback">Please input a description</div>
+                    <div class="valid-feedback" id="valid-description"></div>
+                </div>
+                
+                <div class="form-floating mb-3">
+                    <input type="date" class="form-control" id="start" placeholder="Start">
+                    <label for="start">Start Date</label>
+                    <div class="invalid-feedback">Please choose a start date</div>
+                    <div class="valid-feedback" id="valid-start"></div>
+                </div>
+                <div class="form-control mb-3">
+                    <label class="mb-1" for="image">Image</label>
+                    <input type="file" class="form-control" id="image" name="">
+                    <div class="invalid-feedback" id="invalid-image"></div>
+                    <div class="valid-feedback text-wrap" id="valid-image"></div>
+                    <img class="mt-2 rounded" width="48" height="48" src="assets/default-icon.svg" id="img-display">
+                </div>
+                <button type="submit" class="btn btn-primary mb-3 full" id="post">Post</button>
+            </form>
+        </div>
+    </div>
+</template>
+
 <template id="update-profile-template">
     <div class="container h-100 d-flex align-items-center justify-content-center" id="container">
         <div class="container form-container p-4 rounded-4 shadow-sm">
@@ -143,19 +180,16 @@
         <div class="container rounded-4 shadow-sm feed-container mb-1">
             <div class="d-flex text-muted">
                 <img width="48" height="48" class="rounded mt-4" id="user-img">
-                <p class="p-3 m-0 w-50 text-break" id="info"></p>
-                <div class="container col-2 justify-content-around d-flex flex-column">
-                    <button class="btn btn-outline-primary  rounded-4 border-2" style="width: fit-content; " id="watch">Watch</button>
-                    <button class="btn btn-outline-primary rounded-4 border-2 text-nowrap"  style="width: fit-content;margin-top:-20%;" id="addjob">Add Job</button>    
+                <p class="p-3 m-0 w-50 text-break flex-fill" id="info"></p>
+                <div class="container w-25 justify-content-center d-flex align-items-center m-0 p-0 flex-fill flex-column" id="buttons">
+                    <button class="btn btn-outline-primary rounded-4 border-2 profile-button" style="width: 90px;" id="watch">Watch</button>  
                 </div>
             </div>
         </div>
         <div class="container rounded-4 shadow-sm mb-1 feed-container d-flex align-items-center justify-content-center mt-1">
             <h5 class="p-2 m-0" id="title">His/Her Posted Jobs</h5>
         </div>
-        <div class="container overflow-y-auto h-50 feed-container rounded-4 shadow-sm" id="jobs">
-
-        </div>
+        <div class="container overflow-y-auto h-50 feed-container rounded-4 shadow-sm" id="jobs"></div>
     </div>
 </template>
 

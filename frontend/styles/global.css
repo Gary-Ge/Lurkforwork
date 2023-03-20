@@ -25,6 +25,10 @@ div.watchee-container {
     height: 10%;
 }
 
+button.profile-button {
+    width: 90px;
+}
+
 h3 {
     text-align: center;
 }

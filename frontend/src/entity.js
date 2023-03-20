@@ -33,6 +33,5 @@ export class UpdateDTO {
             this.password=password
             this.name=name
             this.image=image
-        
     }
 }

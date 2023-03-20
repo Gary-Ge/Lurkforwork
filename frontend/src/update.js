@@ -59,8 +59,8 @@ function renderInfo(res) {
 
     document.getElementById("update").addEventListener("click", function(event) { 
         event.preventDefault()
-        update(res,email, name, password, image)
-     })
+        update(res, email, name, password, image)
+    })
 }
 
 function parseFile(image) {
@@ -85,7 +85,7 @@ function parseFile(image) {
     })
 }
 
-function update(res,email, name, password, image) {
+function update(res, email, name, password, image) {
     console.log(common.newvalidEmail(email.value))
     if (!common.newvalidEmail(email.value)) {
         common.invalid(email)
@@ -104,7 +104,7 @@ function update(res,email, name, password, image) {
     fetch(`${common.URL}/user`, {
         method: "PUT",
         headers: common.header(),
-        body: JSON.stringify(new UpdateDTO(email.value, password.value, name.value,image.name))
+        body: JSON.stringify(new UpdateDTO(email.value, password.value, name.value, image.name))
     }).then(res => res.json()).then(res => {
         if (res.error != null) {
             throw new Error(res.error)
