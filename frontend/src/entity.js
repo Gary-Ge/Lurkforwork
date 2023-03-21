@@ -44,3 +44,20 @@ export class PostJobDTO {
         this.image = image
     }
 }
+
+export class UpdateJobDTO {
+    constructor(id, title, description, start, image) {
+        this.id = id
+        this.title = title
+        this.description = description
+        this.start = start
+        this.image = image
+    }
+}
+
+export class CommentDTO {
+    constructor(id, comment) {
+        this.id = id
+        this.comment = comment
+    }
+}

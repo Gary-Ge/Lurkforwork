@@ -1,5 +1,5 @@
 import * as common from "./common.js";
-import { LikeDTO } from "./entity.js";
+import { LikeDTO, CommentDTO } from "./entity.js";
 
 export function render() {
     if (window.localStorage.getItem("token") == null) {
@@ -49,6 +49,22 @@ function updateLike(id, likeCount) {
         }
         for (let r of res) {
             if (r.id == id) likeCount.textContent = r.likes.length
+        }
+    }).catch(error => common.displayAlert(error.message))
+}
+
+function updateComment(jobid, creatorId, commentCount) {
+    fetch(`${common.URL}/user?userId=${creatorId}`, {
+        method: "GET",
+        headers: common.header()
+    }).then(res => res.json()).then(res => {
+        if (res.error != null) {
+            throw new Error(res.error)
+        }
+        for (let r of res.jobs) {
+            if (r.id == jobid) {
+                commentCount.textContent = r.comments.length
+            }
         }
     }).catch(error => common.displayAlert(error.message))
 }
@@ -151,6 +167,47 @@ function renderItem(r, name) {
     commentCountHolder.appendChild(commentCount)
     p.appendChild(comment)
     p.appendChild(commentCountHolder)
+
+    comment.addEventListener("click", () => {
+        comment.disabled = "disabled"
+        const commentArea = common.createLabel("textarea", "form-control")
+        commentArea.rows = "3"
+        commentArea.placeholder = "Comment"
+        p.appendChild(commentArea)
+
+        const send = common.createLabel("button", "btn btn-primary p-1 border-2 float-end mt-2", null, "Send")
+        const close = common.createLabel("button", "btn btn-danger p-1 border-2 float-end m-2", null, "Close")
+        p.appendChild(send)
+        p.appendChild(close)
+
+        close.addEventListener("click", () => {
+            commentArea.remove()
+            send.remove()
+            close.remove()
+            comment.disabled = ""
+        })
+        
+        send.addEventListener("click", () => {
+            if (commentArea.value == "") {
+                common.displayAlert("Cannot send an empty comment")
+                return
+            }
+            fetch(`${common.URL}/job/comment`, {
+                method: "POST",
+                headers: common.header(),
+                body: JSON.stringify(new CommentDTO(r.id, commentArea.value))
+            }).then(res => res.json()).then(res => {
+                if (res.error != null) {
+                    throw new Error(res.error)
+                }
+                updateComment(r.id, r.creatorId, commentCount)
+                commentArea.remove()
+                send.remove()
+                close.remove()
+                comment.disabled = ""
+            }).catch(error => common.displayAlert(error.message))
+        })
+    })
 
     // Create the image of job
     const image = common.createImage(r.image, 48, 48, null, "rounded mt-4")

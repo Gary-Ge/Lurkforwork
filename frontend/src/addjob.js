@@ -1,7 +1,7 @@
 import * as common from "./common.js"
 import { checkNotNull } from "./login.js"
 import { fileToDataUrl } from "./helpers.js"
-import { PostJobDTO } from "./entity.js"
+import { PostJobDTO, UpdateJobDTO } from "./entity.js"
 import { renderNotFound } from "./profile.js"
 
 export function renderAdd() {
@@ -25,7 +25,7 @@ export function renderAdd() {
     const submit = document.getElementById("post")
     submit.addEventListener("click", function(event) {
         event.preventDefault()
-        updateJob(title, description, start, image)
+        postJob(title, description, start, image)
     })
 }
 
@@ -50,44 +50,71 @@ export function renderUpdateJob(id) {
         for (let job of res.jobs) {
             if (job.id == id) {
                 found = true
-                renderInfo(job)
+                renderInfo(job, id)
             }
         }
         if (!found) throw new Error("Job not found or the job is not posted by yourself.")
     }).catch(error => { renderNotFound(error.message) })
 }
 
-function renderInfo(res) {
+function renderInfo(res, id) {
     const title = document.getElementById("title")
     title.value = res.title
-    title.addEventListener("blur", () => { checkNotNull(title) })
+    title.addEventListener("blur", () => { 
+        if (title.value == res.title) {
+            common.valid(title)
+            document.getElementById("valid-title").textContent = "The job title will not change"
+        } else {
+            document.getElementById("valid-title").textContent = ""
+            checkNotNull(title)
+        }
+    })
 
     const description = document.getElementById("description")
     description.value = res.description
-    description.addEventListener("blur", () => { checkNotNull(description) })
+    description.addEventListener("blur", () => { 
+        if (description.value == res.description) {
+            common.valid(description)
+            document.getElementById("valid-description").textContent = "The job description will not change"
+        } else {
+            document.getElementById("valid-description").textContent = ""
+            checkNotNull(description)
+        }
+     })
 
     const start = document.getElementById("start")
-    start.addEventListener("blur", () => { checkDate(start) })
+    let dateStart = new Date(res.start)
+    let dateString = `${dateStart.getFullYear().toString().padStart(4, "0")}-${(dateStart.getMonth() + 1).toString().padStart(2, "0")}-${dateStart.getDate().toString().padStart(2, "0")}`
+    start.value = dateString;
+    start.addEventListener("blur", () => { 
+        if (start.value == dateString) {
+            common.valid(start)
+            document.getElementById("valid-start").textContent = "The start date will not change"
+        } else {
+            document.getElementById("valid-start").textContent = ""
+            checkDate(start)
+        }
+    })
 
     document.getElementById("img-display").src = res.image
     const image = document.getElementById("image")
-    image.name = "assets/default-job-icon.svg"
-    image.addEventListener("change", () => { parseFile(image) })
+    image.name = res.image
+    image.addEventListener("change", () => { parseFile(image, res.image) })
 
     const submit = document.getElementById("post")
     submit.addEventListener("click", function(event) {
         event.preventDefault()
-        postJob(title, description, start, image)
+        updateJob(id, title, description, start, image)
     })
 }
 
-function parseFile(image) {
+function parseFile(image, origin=null) {
     const file = image.files[0]
 
     if (file == null) {
-        image.name = "assets/default-job-icon.svg"
-        document.getElementById("img-display").src = "assets/default-job-icon.svg"
-        document.getElementById("valid-image").textContent = "A default icon will be used"
+        image.name = origin ? origin : "assets/default-job-icon.svg"
+        document.getElementById("img-display").src = origin ? origin : "assets/default-job-icon.svg"
+        document.getElementById("valid-image").textContent = origin ? "Your job icon will not change" : "A default icon will be used"
         common.valid(image)
         return
     }
@@ -146,7 +173,7 @@ function postJob(title, description, start, image) {
     }).catch(error => { common.displayAlert(error.message) })
 }
 
-function updateJob(title, description, start, image) {
+function updateJob(id, title, description, start, image) {
     if (!checkNotNull(title)) {
         common.displayAlert("Please input a title")
         return
@@ -160,6 +187,16 @@ function updateJob(title, description, start, image) {
         return
     }
     let dateStart = new Date(start.value)
+    fetch(`${common.URL}/job`, {
+        method: "PUT",
+        headers: common.header(),
+        body: JSON.stringify(new UpdateJobDTO(id, title.value, description.value, convertDateToUTC(dateStart), image.name))
+    }).then(res => res.json()).then(res => {
+        if (res.error != null) {
+            throw new Error(res.error)
+        }
+        window.location.hash = "#profile"
+    }).catch(error => { common.displayAlert(error.message) })
 }
 
 function convertDateToUTC(date) { 
