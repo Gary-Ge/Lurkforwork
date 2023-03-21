@@ -102,7 +102,7 @@
     <div class="container h-100 d-flex align-items-center justify-content-center" id="container">
         <div class="container form-container p-4 rounded-4 shadow-sm">
             <form id="form">
-                <h3 class="text-mute mb-3">Post New Job</h3>
+                <h3 class="text-mute mb-3" id="form-title">Post New Job</h3>
                 <div class="form-floating mb-3">
                     <input type="text" class="form-control" id="title" placeholder="Title">
                     <label for="title">Job Title</label>
@@ -117,17 +117,18 @@
                 </div>
                 
                 <div class="form-floating mb-3">
-                    <input type="date" class="form-control" id="start" placeholder="Start">
+                    <input type="date" class="form-control" id="start" placeholder="start">
                     <label for="start">Start Date</label>
-                    <div class="invalid-feedback">Please choose a start date</div>
+                    <div class="invalid-feedback" id="invalid-start">Please choose a start date</div>
                     <div class="valid-feedback" id="valid-start"></div>
                 </div>
+
                 <div class="form-control mb-3">
                     <label class="mb-1" for="image">Image</label>
                     <input type="file" class="form-control" id="image" name="">
                     <div class="invalid-feedback" id="invalid-image"></div>
                     <div class="valid-feedback text-wrap" id="valid-image"></div>
-                    <img class="mt-2 rounded" width="48" height="48" src="assets/default-icon.svg" id="img-display">
+                    <img class="mt-2 rounded" width="48" height="48" src="assets/default-job-icon.svg" id="img-display">
                 </div>
                 <button type="submit" class="btn btn-primary mb-3 full" id="post">Post</button>
             </form>
@@ -182,7 +183,7 @@
                 <img width="48" height="48" class="rounded mt-4" id="user-img">
                 <p class="p-3 m-0 w-50 text-break flex-fill" id="info"></p>
                 <div class="container w-25 justify-content-center d-flex align-items-center m-0 p-0 flex-fill flex-column" id="buttons">
-                    <button class="btn btn-outline-primary rounded-4 border-2 profile-button" style="width: 90px;" id="watch">Watch</button>  
+                    <button class="btn btn-outline-primary border-2 profile-button" style="width: 90px;" id="watch">Watch</button>  
                 </div>
             </div>
         </div>
@@ -201,7 +202,7 @@
                     <h5 class="modal-title" id="alert-title">Alert</h5>
                 </div>
                 <div class="modal-body" id="alert-body"></div>
-                <div class="modal-footer">
+                <div class="modal-footer" id="alert-footer">
                     <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
@@ -228,7 +229,7 @@
 
 <template id="not-found-template">
     <div class="container h-100 d-flex flex-column align-items-center justify-content-center" id="container">
-        <h1 id="message">Profile Not Found</h1>
+        <h1 id="message" class="text-center">Profile Not Found</h1>
         <button class="btn btn-primary" id="home">Home</button>
     </div>
 </template>

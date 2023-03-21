@@ -1,6 +1,5 @@
 import * as common from "./common.js"
 import { WatchDTO } from "./entity.js"
-import { renderUpdate } from "./update.js"
 
 export function renderProfile(id) {
     if (window.localStorage.getItem("token") == null) {
@@ -21,16 +20,15 @@ export function renderProfile(id) {
             throw new Error(res.error)
         }
         renderHeader(res, mine)
-    }).catch(error => renderNotFound(error.message))
 
-    fetch(`${common.URL}/job/feed?start=0`, {
-        method: "GET",
-        headers: common.header()
-    }).then(res => res.json()).then(res => {
-        if (res.error != null) {
-            throw new Error(res.error)
-        }
-        renderJobs(res, id)
+        let sortedJobs = res.jobs.sort(function(a, b) {
+            let t1 = a.createdAt
+            let t2 = b.createdAt
+            if (t1 < t2) return 1
+            else if (t1 == t2) return 0
+            else return -1
+        })
+        renderJobs(sortedJobs, mine)
     }).catch(error => renderNotFound(error.message))
 }
 
@@ -59,8 +57,9 @@ function renderHeader(res, mine) {
     const button = document.getElementById("watch")
     if (mine) {
         button.textContent = "Update"
+        button.className = "btn btn-primary p-1 border-2"
         button.addEventListener("click", () => { window.location.hash = "#update" })
-        const buttonAdd = common.createLabel("button", "btn btn-outline-primary rounded-4 border-2 mt-2 profile-button", null, "Add Job")
+        const buttonAdd = common.createLabel("button", "btn btn-primary p-1 border-2 mt-2 profile-button", null, "Add Job")
         document.getElementById("buttons").appendChild(buttonAdd)
         buttonAdd.addEventListener("click", () => { window.location.hash = "#addjob" })
     } else {
@@ -68,7 +67,7 @@ function renderHeader(res, mine) {
         for (let i of res.watcheeUserIds) {
             if (i == common.getUserId()) {
                 button.textContent = "Watched"
-                button.className = "btn btn-primary p-1 rounded-4 border-2"
+                button.className = "btn btn-primary p-1 border-2"
                 watched = true
                 break
             }
@@ -78,21 +77,20 @@ function renderHeader(res, mine) {
     }
 }
 
-function renderJobs(res, id) {
+function renderJobs(res, mine) {
     const listContainer = document.getElementById("jobs")
     for (let r of res) {
-        if (r.creatorId == id) {
-            listContainer.appendChild(renderItem(r))
-        }
+        listContainer.appendChild(renderItem(r, mine))
     }
 }
 
-function renderItem(r) {
+function renderItem(r, mine) {
     // Create the p label containing all the contents (except the image) of a job
     const p = common.createLabel("p", "small p-3 m-0")
 
     // Create the text node containing the post time
     p.appendChild(document.createTextNode(`${common.dateFormat(r.createdAt, true)}`))
+
     p.appendChild(document.createElement("br"))
 
     // Create title of job
@@ -107,6 +105,20 @@ function renderItem(r) {
     const start = common.createLabel("small", null, null, `Start on ${common.dateFormat(r.start)}`)
     p.appendChild(start)
     p.appendChild(document.createElement("br"))
+
+    if (mine) {
+        const buttonEdit = common.createLabel("button", "btn btn-sm p-0")
+        const editImage = common.createImage("assets/edit-job.svg", 20, 20)
+        buttonEdit.addEventListener("click", () => { window.location.hash = `#update_job=${r.id}` })
+        buttonEdit.appendChild(editImage)
+        p.appendChild(buttonEdit)
+
+        const buttonDelete = common.createLabel("button", "btn btn-sm p-0")
+        const deleteImage = common.createImage("assets/delete-job.svg", 20, 20)
+        buttonDelete.addEventListener("click", () => { deleteJob(r.title, r.id) })
+        buttonDelete.appendChild(deleteImage)
+        p.appendChild(buttonDelete)
+    }
 
     // Create the image of job
     const image = common.createImage(r.image, 48, 48, null, "rounded mt-4")
@@ -138,7 +150,7 @@ function watch(id, email, button, watchees) {
         }
         button.name = watch ? "watched" : "watch"
         button.textContent = watch ? "Watched" : "Watch"
-        button.className = watch ? "btn btn-primary p-1 rounded-4 border-2" : "btn btn-outline-primary p-1 rounded-4 border-2"
+        button.className = watch ? "btn btn-primary p-1 border-2" : "btn btn-outline-primary p-1 border-2"
         updateWachees(id, watchees)
     }).catch(error => common.displayAlert(error.message))
 }
@@ -189,6 +201,34 @@ function displayWatchees(watcheeUserIds) {
 
 }
 
-function renderWatchees(watcheeUserIds, modalBody) {
+function deleteJob(title, jobId) {
+    if (document.getElementById("alert") != null) {
+        document.getElementById("alert").remove()
+    }
+    document.getElementById("container").appendChild(common.template("alert-template"))
+    document.getElementById("alert-body").textContent = `Are you sure you want to delete job "${title}"?`
+
+    let modal = new bootstrap.Modal(document.getElementById("alert"), {})
+
+    const confirm = common.createLabel("button", "btn btn-danger", null, "Confirm")
+    confirm.addEventListener("click", () => { 
+        modal.hide()
+        fetch(`${common.URL}/job`, {
+            method: "DELETE",
+            headers: common.header(),
+            body: JSON.stringify({ id: jobId })
+        }).then(res => res.json()).then(res => {
+            if (res.error != null) {
+                throw new Error(res.error)
+            }
+            location.reload()
+        }).catch(error => { common.displayAlert(error.message) })
+    })
+    document.getElementById("alert-footer").appendChild(confirm)
+
+    modal.show()
+}
+
+function updateJob(jobId) {
 
 }

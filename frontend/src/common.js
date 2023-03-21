@@ -37,9 +37,10 @@ export function newvalidEmail(email) {
 
 
 export function displayAlert(content) {
-    if (document.getElementById("alert") == null) {
-        document.getElementById("container").appendChild(template("alert-template"))
+    if (document.getElementById("alert") != null) {
+        document.getElementById("alert").remove()
     }
+    document.getElementById("container").appendChild(template("alert-template"))
     document.getElementById("alert-body").textContent = content
     new bootstrap.Modal(document.getElementById("alert"), {}).show()
 }

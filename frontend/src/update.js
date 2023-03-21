@@ -1,6 +1,6 @@
 import * as common from "./common.js"
-import { renderNotFound, renderProfile } from "./profile.js"
-import { checkEmail, checkNotNull } from "./login.js"
+import { renderNotFound } from "./profile.js"
+import { checkEmail } from "./login.js"
 import { fileToDataUrl } from "./helpers.js"
 import { UpdateDTO } from "./entity.js"
 
@@ -55,7 +55,7 @@ function renderInfo(res) {
 
     const image = document.getElementById("image")
     image.addEventListener("change", () => { parseFile(image) })
-    if (res.image != null) image.src = res.image
+    if (res.image != null) document.getElementById("img-display").src = res.image
 
     document.getElementById("update").addEventListener("click", function(event) { 
         event.preventDefault()

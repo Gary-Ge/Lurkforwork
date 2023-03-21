@@ -35,3 +35,12 @@ export class UpdateDTO {
             this.image=image
     }
 }
+
+export class PostJobDTO {
+    constructor(title, description, start, image) {
+        this.title = title
+        this.description = description
+        this.start = start
+        this.image = image
+    }
+}
