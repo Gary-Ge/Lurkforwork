@@ -3,6 +3,7 @@ import { LikeDTO, CommentDTO } from "./entity.js";
 
 let startIndex
 let containerSize
+let polling // Timer for live update
 
 export function render() {
     startIndex = 0
@@ -25,7 +26,45 @@ export function render() {
         renderList(res)
     }).catch(error => common.displayAlert(error.message))
 
+    startPolling()
+
     common.active("nav-home")
+}
+
+function startPolling() {
+    polling = setInterval(poll, 3000)
+}
+
+export function stopPolling() {
+    clearInterval(polling)
+}
+
+function poll() {
+    fetch(`${common.URL}/job/feed?start=0`, {
+        method: "GET",
+        headers: common.header()
+    }).then(res => res.json()).then(res => {
+        if (res.error != null) {
+            throw new Error(res.error)
+        }
+        for (let r of res) {
+            if (document.getElementById(`like-${r.id}`) != null) document.getElementById(`like-${r.id}`).textContent = r.likes.length
+            if (document.getElementById(`comment-${r.id}`) != null) document.getElementById(`comment-${r.id}`).textContent = r.comments.length
+            const modalBody = document.getElementById("modal-body")
+            if (modalBody != null && modalBody.name == `modal-${r.id}`) {
+                if (document.getElementById("modal-title").textContent == "Comments") {
+                    if (r.comments.length * 2 != modalBody.children.length) {
+                        for (let i = modalBody.children.length / 2; i < r.comments.length; i++) {
+                            const commenter = common.createALabel("text-decoration-none", `#profile=${r.comments[i].userId}`, `@${r.comments[i].userName}`, `modal-comment-${r.comments[i].userId}`)
+                            modalBody.appendChild(commenter)
+                            const content = common.createLabel("p", "small p-1 m-0 border-bottom", null, r.comments[i].comment)
+                            modalBody.appendChild(content)
+                        }
+                    }
+                }
+            }
+        }
+    }).catch(error => { common.displayAlert(error.message) })
 }
 
 function liking(id, creatorId, image, button, likeCount) {
@@ -192,7 +231,7 @@ function renderItem(r, name) {
     like.appendChild(likeImage)
     // Create the like count holder
     const likeCountHolder = common.createLabel("small")
-    const likeCount = common.createALabel("text-decoration-none", "#", r.likes.length)
+    const likeCount = common.createALabel("text-decoration-none", "#", r.likes.length, `like-${r.id}`)
     like.addEventListener("click", () => { liking(r.id, r.creatorId, likeImage, like, likeCount) })
     likeCount.addEventListener("click", function(event) {
         event.preventDefault()
@@ -210,7 +249,7 @@ function renderItem(r, name) {
     comment.appendChild(commentImage)
     // Create the comment count holder
     const commentCountHolder = common.createLabel("small")
-    const commentCount = common.createALabel("text-decoration-none", "#", r.comments.length)
+    const commentCount = common.createALabel("text-decoration-none", "#", r.comments.length, `comment-${r.id}`)
     commentCount.addEventListener("click", function(event) {
         event.preventDefault()
         common.displayModal(r.id, r.creatorId, false) 

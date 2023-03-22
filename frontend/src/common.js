@@ -53,6 +53,7 @@ export function displayModal(jobId, creatorId, like=true) {
     // document.getElementById("modal-body").textContent = content
     document.getElementById("modal-title").textContent = like ? "Likers" : "Comments"
     const modalBody = document.getElementById("modal-body")
+    modalBody.name = `modal-${jobId}`
     fetch(`${URL}/user?userId=${creatorId}`, {
         method: "GET",
         headers: header()
@@ -70,7 +71,7 @@ export function displayModal(jobId, creatorId, like=true) {
                     }
                 } else {
                     for (let comment of r.comments) {
-                        const commenter = createALabel("text-decoration-none", `#profile=${comment.userId}`, `@${comment.userName}`)
+                        const commenter = createALabel("text-decoration-none", `#profile=${comment.userId}`, `@${comment.userName}`, `modal-comment-${comment.userId}`)
                         modalBody.appendChild(commenter)
                         const content = createLabel("p", "small p-1 m-0 border-bottom", null, comment.comment)
                         modalBody.appendChild(content)
