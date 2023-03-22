@@ -236,14 +236,15 @@
 
 <script src="src/main.js" type="module"></script>
 <script>
-    const navLinks = document.querySelectorAll('.nav-item')
-    var body = document.body;
-    const menuToggle = document.getElementById('navbar')
-    const bsCollapse = new bootstrap.Collapse(menuToggle, {toggle:false})
-    navLinks.forEach((l) => {
-        l.addEventListener('click', () => { bsCollapse.toggle()})
-})
-    const navbar = document.querySelector('.navbar-collapse');
+    document.addEventListener("DOMContentLoaded", function() {
+    const navbarLinks = document.querySelectorAll(".navbar-nav li a");
+    navbarLinks.forEach(function(navbarLink) {
+      navbarLink.addEventListener("click", function() {
+        const navbarCollapse = document.querySelector(".navbar-collapse");
+        navbarCollapse.classList.remove("show");
+      });
+    });
+  });
 
     // Add a click event listener to the document
     document.addEventListener('click', function (event) {
