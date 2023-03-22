@@ -235,3 +235,22 @@
 </template>
 
 <script src="src/main.js" type="module"></script>
+<script>
+    const navLinks = document.querySelectorAll('.nav-item')
+    var body = document.body;
+    const menuToggle = document.getElementById('navbar')
+    const bsCollapse = new bootstrap.Collapse(menuToggle, {toggle:false})
+    navLinks.forEach((l) => {
+        l.addEventListener('click', () => { bsCollapse.toggle()})
+})
+    const navbar = document.querySelector('.navbar-collapse');
+
+    // Add a click event listener to the document
+    document.addEventListener('click', function (event) {
+    // Check if the clicked element is not part of the navbar and the navbar is open
+    if (!navbar.contains(event.target) && navbar.classList.contains('show')) {
+        // Hide the navbar
+        navbar.classList.remove('show');
+    }
+    });
+</script>
