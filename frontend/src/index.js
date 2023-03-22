@@ -1,7 +1,12 @@
 import * as common from "./common.js";
 import { LikeDTO, CommentDTO } from "./entity.js";
 
+let startIndex
+let containerSize
+
 export function render() {
+    startIndex = 0
+    containerSize = 0
     if (window.localStorage.getItem("token") == null) {
         window.location.hash = "#login"
         return
@@ -23,7 +28,7 @@ export function render() {
     common.active("nav-home")
 }
 
-function liking(id, image, button, likeCount) {
+function liking(id, creatorId, image, button, likeCount) {
     let like = button.name == "liked" ? false : true
     fetch(`${common.URL}/job/like`, {
         method: "PUT",
@@ -35,20 +40,20 @@ function liking(id, image, button, likeCount) {
         }
         image.src = like ? "assets/liked.svg" : "assets/like.svg"
         button.name = like ? "liked" : "like"
-        updateLike(id, likeCount)
+        updateLike(id, creatorId, likeCount)
     }).catch(error => common.displayAlert(error.message))
 }
 
-function updateLike(id, likeCount) {
-    fetch(`${common.URL}/job/feed?start=0`, {
+function updateLike(jobId, creatorId, likeCount) {
+    fetch(`${common.URL}/user?userId=${creatorId}`, {
         method: "GET",
         headers: common.header(),
     }).then(res => res.json()).then(res => {
         if (res.error != null) {
             throw new Error(res.error)
         }
-        for (let r of res) {
-            if (r.id == id) likeCount.textContent = r.likes.length
+        for (let r of res.jobs) {
+            if (r.id == jobId) likeCount.textContent = r.likes.length
         }
     }).catch(error => common.displayAlert(error.message))
 }
@@ -70,7 +75,7 @@ function updateComment(jobid, creatorId, commentCount) {
 }
 
 function renderList(res) {
-    const listContainer = common.createLabel("div", "container h-75 rounded-4 shadow-sm feed-container overflow-y-auto")
+    const listContainer = common.createLabel("div", "container h-75 rounded-4 shadow-sm feed-container overflow-y-auto", "list-container")
 
     const fetches = []
     for (let r of res) {
@@ -90,6 +95,7 @@ function renderList(res) {
         if (userRes.length != res.length) throw new Error("Bad Result")
         for (let i in userRes) {
             listContainer.appendChild(renderItem(res[i], userRes[i].name))
+            containerSize++
         }
     }).catch((error) => common.displayAlert(error.message))
     const titleContainer = common.createLabel("div", "container rounded-4 shadow-sm mb-2 feed-container d-flex align-items-center justify-content-center")
@@ -97,6 +103,52 @@ function renderList(res) {
     titleContainer.appendChild(title)
     document.getElementById("container").appendChild(titleContainer)
     document.getElementById("container").appendChild(listContainer)
+
+    startIndex = res.length
+
+    listContainer.addEventListener("scroll", () => {
+        if (listContainer.scrollHeight - (listContainer.clientHeight + listContainer.scrollTop) <= 1) {
+            renderExtra(listContainer)
+        }
+    })
+}
+
+function renderExtra(listContainer) {
+    fetch(common.URL + `/job/feed?start=${startIndex}`, {
+        method: "GET",
+        headers: common.header()
+    }).then(res => res.json()).then(res => {
+        if (res.error != null) {
+            throw new Error(res.error)
+        }
+        renderExtraList(res, listContainer)
+    }).catch(error => common.displayAlert(error.message))
+}
+
+function renderExtraList(res, listContainer) {
+    if (res.length == 0 || startIndex != containerSize) return
+    startIndex += res.length
+    const fetches = []
+    for (let r of res) {
+        fetches.push(new Promise(function (resolve, reject) {
+            fetch(`${common.URL}/user?userId=${r.creatorId}`, {
+                method: "GET",
+                headers: common.header()
+            }).then(res => res.json()).then(res => {
+                if (res.error != null) {
+                    throw new Error(res.error)
+                }
+                resolve(res)
+            }).catch (error => reject(error))
+        }))
+    }
+    Promise.all(fetches).then(userRes => { 
+        if (userRes.length != res.length) throw new Error("Bad Result")
+        for (let i in userRes) {
+            listContainer.appendChild(renderItem(res[i], userRes[i].name))
+            containerSize++
+        }
+    }).catch((error) => common.displayAlert(error.message))
 }
 
 function renderItem(r, name) {
@@ -141,10 +193,10 @@ function renderItem(r, name) {
     // Create the like count holder
     const likeCountHolder = common.createLabel("small")
     const likeCount = common.createALabel("text-decoration-none", "#", r.likes.length)
-    like.addEventListener("click", () => { liking(r.id, likeImage, like, likeCount) })
+    like.addEventListener("click", () => { liking(r.id, r.creatorId, likeImage, like, likeCount) })
     likeCount.addEventListener("click", function(event) {
         event.preventDefault()
-        common.displayModal(r.id) 
+        common.displayModal(r.id, r.creatorId) 
         return false
     })
     likeCountHolder.appendChild(likeCount)
@@ -161,7 +213,7 @@ function renderItem(r, name) {
     const commentCount = common.createALabel("text-decoration-none", "#", r.comments.length)
     commentCount.addEventListener("click", function(event) {
         event.preventDefault()
-        common.displayModal(r.id, false) 
+        common.displayModal(r.id, r.creatorId, false) 
         return false
     })
     commentCountHolder.appendChild(commentCount)

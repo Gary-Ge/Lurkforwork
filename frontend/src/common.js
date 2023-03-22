@@ -45,7 +45,7 @@ export function displayAlert(content) {
     new bootstrap.Modal(document.getElementById("alert"), {}).show()
 }
 
-export function displayModal(id, like=true) {
+export function displayModal(jobId, creatorId, like=true) {
     if (document.getElementById("modal") != null) {
         document.getElementById("modal").remove()
     }
@@ -53,15 +53,15 @@ export function displayModal(id, like=true) {
     // document.getElementById("modal-body").textContent = content
     document.getElementById("modal-title").textContent = like ? "Likers" : "Comments"
     const modalBody = document.getElementById("modal-body")
-    fetch(`${URL}/job/feed?start=0`, {
+    fetch(`${URL}/user?userId=${creatorId}`, {
         method: "GET",
         headers: header()
     }).then(res => res.json()).then(res => {
         if (res.error != null) {
             throw new Error(res.error)
         }
-        for (let r of res) {
-            if (r.id == id) {
+        for (let r of res.jobs) {
+            if (r.id == jobId) {
                 if (like) {
                     for (let user of r.likes) {
                         const liker = createALabel("text-decoration-none", `#profile=${user.userId}`, `@${user.userName}`)
