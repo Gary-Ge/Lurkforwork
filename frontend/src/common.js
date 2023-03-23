@@ -65,9 +65,8 @@ export function displayModal(jobId, creatorId, like=true) {
             if (r.id == jobId) {
                 if (like) {
                     for (let user of r.likes) {
-                        const liker = createALabel("text-decoration-none", `#profile=${user.userId}`, `@${user.userName}`)
+                        const liker = createALabel("text-decoration-none", `#profile=${user.userId}`, `@${user.userName} `, `modal-like-${user.userId}`)
                         modalBody.appendChild(liker)
-                        modalBody.appendChild(document.createElement("br"))
                     }
                 } else {
                     for (let comment of r.comments) {
@@ -90,7 +89,7 @@ export function saveToken(token, userId) {
     window.localStorage.setItem("userId", userId)
 }
 
-function getToken() {
+export function getToken() {
     return window.localStorage.getItem("token")
 }
 

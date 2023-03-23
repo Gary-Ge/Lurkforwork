@@ -1,5 +1,6 @@
 import * as common from "./common.js";
 import { LikeDTO, CommentDTO } from "./entity.js";
+import { sendNotification } from "./main.js";
 
 let startIndex
 let containerSize
@@ -52,14 +53,36 @@ function poll() {
             if (document.getElementById(`comment-${r.id}`) != null) document.getElementById(`comment-${r.id}`).textContent = r.comments.length
             const modalBody = document.getElementById("modal-body")
             if (modalBody != null && modalBody.name == `modal-${r.id}`) {
-                if (document.getElementById("modal-title").textContent == "Comments") {
-                    if (r.comments.length * 2 != modalBody.children.length) {
-                        for (let i = modalBody.children.length / 2; i < r.comments.length; i++) {
-                            const commenter = common.createALabel("text-decoration-none", `#profile=${r.comments[i].userId}`, `@${r.comments[i].userName}`, `modal-comment-${r.comments[i].userId}`)
-                            modalBody.appendChild(commenter)
-                            const content = common.createLabel("p", "small p-1 m-0 border-bottom", null, r.comments[i].comment)
-                            modalBody.appendChild(content)
+                if (document.getElementById("modal-title").textContent == "Comments" && r.comments.length * 2 != modalBody.children.length) {
+                    for (let i = modalBody.children.length / 2; i < r.comments.length; i++) {
+                        const commenter = common.createALabel("text-decoration-none", `#profile=${r.comments[i].userId}`, `@${r.comments[i].userName}`, `modal-comment-${r.comments[i].userId}`)
+                        modalBody.appendChild(commenter)
+                        const content = common.createLabel("p", "small p-1 m-0 border-bottom", null, r.comments[i].comment)
+                        modalBody.appendChild(content)
+                    }
+                } else if (document.getElementById("modal-title").textContent == "Likers") {
+                    for (let liker of r.likes) {
+                        let found = false
+                        for (let child of modalBody.children) {
+                            if (child.id == `modal-like-${liker.userId}`) {
+                                found = true
+                                break
+                            }
                         }
+                        if (!found) {
+                            const newLiker = common.createALabel("text-decoration-none", `#profile=${liker.userId}`, `@${liker.userName} `, `modal-like-${liker.userId}`)
+                            modalBody.appendChild(newLiker)
+                        }
+                    }
+                    for (let child of modalBody.children) {
+                        let found = false
+                        for (let liker of r.likes) {
+                            if (child.id.split("-")[2] == liker.userId) {
+                                found = true
+                                break
+                            }
+                        }
+                        if (!found) child.remove()
                     }
                 }
             }

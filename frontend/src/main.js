@@ -6,7 +6,36 @@ import * as common from "./common.js"
 import { renderUpdate } from './update.js';
 import { renderAdd, renderUpdateJob } from './addjob.js';
 
+let mostRecentDate = null
+let pollingRecent
+
+export function sendNotification(title, content) {
+    let notification 
+    if (Notification.permission === 'default' || Notification.permission === 'undefined') {
+        Notification.requestPermission(function(result) {
+            if (result === 'granted') {
+                notification = new Notification(title, {
+                    body: content,
+                    icon: "assets/4.svg"
+                })
+            }
+        })
+    } else {
+        notification = new Notification(title, {
+            body: content,
+            icon: "assets/4.svg"
+        })
+    }
+}
+
+function requestNotificationPermission() {
+    Notification.requestPermission(function(result) {
+        return result
+    })
+}
+
 window.addEventListener("hashchange", displayPage)
+requestNotificationPermission()
 displayPage()
 
 function displayPage() {
@@ -35,5 +64,40 @@ function displayPage() {
         default:
             render()
             break
+    }
+    if (common.getToken() != null) {
+        if (mostRecentDate == null) {
+            fetchMostRecentJob(setMostRecentJob)
+        } else {
+            fetchMostRecentJob(compareMostRecentJob)
+        }
+    }
+}
+
+function fetchMostRecentJob(action) {
+    fetch(`${common.URL}/job/feed?start=0`, {
+        method: "GET",
+        headers: common.header()
+    }).then(res => res.json()).then(res => {
+        if (res.error != null) {
+            throw new Error(res.error)
+        }
+        if (res.length > 0) {
+            action(res[0].createdAt)
+        }
+    }).catch(error => { common.displayAlert(error.message) })
+}
+
+function setMostRecentJob(createdAt) {
+    console.log("aaa")
+    mostRecentDate = new Date(createdAt)
+}
+
+function compareMostRecentJob(createdAt) {
+    console.log("bbb")
+    let recentDate = new Date(createdAt)
+    if (recentDate > mostRecentDate) {
+        mostRecentDate = recentDate;
+        sendNotification("A New Job", "A user you are watching has posted a new job, goto or refresh the main page to check it!")
     }
 }
