@@ -43,6 +43,7 @@ function displayPage() {
     const hash = window.location.hash
     switch(true) {
         case hash == "#login":
+            clearInterval(pollingRecent)
             renderLogin()
             break
         case hash == "#register":
@@ -68,10 +69,14 @@ function displayPage() {
     if (common.getToken() != null) {
         if (mostRecentDate == null) {
             fetchMostRecentJob(setMostRecentJob)
-        } else {
-            fetchMostRecentJob(compareMostRecentJob)
         }
+        clearInterval(pollingRecent)
+        pollingRecent = setInterval(pollingRecentJobs, 3000)
     }
+}
+
+function pollingRecentJobs() {
+    fetchMostRecentJob(compareMostRecentJob)
 }
 
 function fetchMostRecentJob(action) {
