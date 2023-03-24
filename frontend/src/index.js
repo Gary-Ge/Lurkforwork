@@ -159,6 +159,13 @@ function renderList(res) {
             listContainer.appendChild(renderItem(res[i], userRes[i].name))
             containerSize++
         }
+        listContainer.appendChild(common.template("end-template"))
+        const more = document.getElementById("more")
+        more.addEventListener("click", function(event) {
+            event.preventDefault()
+            more.remove()
+            renderExtra(listContainer)
+        })
     }).catch((error) => common.displayAlert(error.message))
     const titleContainer = common.createLabel("div", "container rounded-4 shadow-sm mb-2 feed-container d-flex align-items-center justify-content-center")
     const title = common.createLabel("h5", "p-2 m-0", null, "Recently Updated Jobs")
@@ -170,6 +177,9 @@ function renderList(res) {
 
     listContainer.addEventListener("scroll", () => {
         if (listContainer.scrollHeight - (listContainer.clientHeight + listContainer.scrollTop) <= 1) {
+            if (document.getElementById("more") != null) {
+                document.getElementById("more").remove()
+            }
             renderExtra(listContainer)
         }
     })
@@ -210,6 +220,13 @@ function renderExtraList(res, listContainer) {
             listContainer.appendChild(renderItem(res[i], userRes[i].name))
             containerSize++
         }
+        listContainer.appendChild(common.template("end-template"))
+        const more = document.getElementById("more")
+        more.addEventListener("click", function(event) {
+            event.preventDefault()
+            more.remove()
+            renderExtra(listContainer)
+        })
     }).catch((error) => common.displayAlert(error.message))
 }
 
