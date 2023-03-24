@@ -81,9 +81,10 @@ export function displayModal(jobId, creatorId, like=true) {
                 break
             }
         }
-    }).catch(error => displayAlert(error.message))
-
-    new bootstrap.Modal(document.getElementById("modal"), {}).show()
+        new bootstrap.Modal(document.getElementById("modal"), {}).show()
+    }).catch(error => {
+        error.message == "Failed to fetch" ? displayAlert("You can't see details of posts now due to a network error") : displayAlert(error.message)
+    })
 }
 
 export function saveToken(token, userId) {

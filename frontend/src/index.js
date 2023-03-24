@@ -6,13 +6,6 @@ let startIndex
 let containerSize
 let polling // Timer for live update
 
-function foo() {
-    const bodies = document.getElementsByClassName("popover-body")
-    if (bodies.length > 0) {
-        bodies[0].appendChild(common.template("email-input-template"))
-    }
-}
-
 export function render() {
     startIndex = 0
     containerSize = 0
@@ -43,12 +36,6 @@ export function render() {
             watchByEmail(email)
         })
     })
-    // popoverButton.addEventListener("click", () => {
-    //     const bodies = document.getElementsByClassName("popover-body")
-    //     if (bodies.length > 0) {
-    //         bodies[0].appendChild(common.template("email-input-template"))
-    //     }
-    // })
 
 
     fetch(common.URL + "/job/feed?start=0", {
@@ -59,10 +46,15 @@ export function render() {
             throw new Error(res.error)
         }
         renderList(res)
-    }).catch(error => common.displayAlert(error.message))
+    }).catch(error => { 
+        if (error.message == "Failed to fetch") {
+            if (window.localStorage.getItem("jobs_cache") != null) {
+                renderList(JSON.parse(window.localStorage.getItem("jobs_cache")))
+            } else common.displayAlert("Network error and no cache available") 
+        } else common.displayAlert(error.message) 
+    })
 
     startPolling()
-
     common.active("nav-home")
 }
 
@@ -80,7 +72,9 @@ function watchByEmail(email) {
             throw new Error(res.error)
         }
         location.reload()
-    }).catch(error => common.displayAlert(error.message))
+    }).catch(error => { 
+        error.message == "Failed to fetch" ? common.displayAlert("You can't watch users now due to a network error") : common.displayAlert(error.message)
+    })
 }
 
 function startPolling() {
@@ -138,7 +132,9 @@ function poll() {
                 }
             }
         }
-    }).catch(error => { common.displayAlert(error.message) })
+    }).catch(error => { 
+        if (error.message != "Failed to fetch") common.displayAlert(error.message) 
+    })
 }
 
 function liking(id, creatorId, image, button, likeCount) {
@@ -154,7 +150,9 @@ function liking(id, creatorId, image, button, likeCount) {
         image.src = like ? "assets/liked.svg" : "assets/like.svg"
         button.name = like ? "liked" : "like"
         updateLike(id, creatorId, likeCount)
-    }).catch(error => common.displayAlert(error.message))
+    }).catch(error => { 
+        error.message == "Failed to fetch" ? common.displayAlert("You can't like posts now due to a network error") : common.displayAlert(error.message)
+    })
 }
 
 function updateLike(jobId, creatorId, likeCount) {
@@ -168,7 +166,9 @@ function updateLike(jobId, creatorId, likeCount) {
         for (let r of res.jobs) {
             if (r.id == jobId) likeCount.textContent = r.likes.length
         }
-    }).catch(error => common.displayAlert(error.message))
+    }).catch(error => {
+        error.message == "Failed to fetch" ? common.displayAlert("You can't like posts now due to a network error") : common.displayAlert(error.message)
+    })
 }
 
 function updateComment(jobid, creatorId, commentCount) {
@@ -184,7 +184,9 @@ function updateComment(jobid, creatorId, commentCount) {
                 commentCount.textContent = r.comments.length
             }
         }
-    }).catch(error => common.displayAlert(error.message))
+    }).catch(error => { 
+        error.message == "Failed to fetch" ? common.displayAlert("You can't send comments now due to a network error") : common.displayAlert(error.message)
+    })
 }
 
 function renderList(res) {
@@ -217,7 +219,27 @@ function renderList(res) {
             more.remove()
             renderExtra(listContainer)
         })
-    }).catch((error) => common.displayAlert(error.message))
+    }).catch((error) => {
+        if (error.message == "Failed to fetch") {
+            if (window.localStorage.getItem("posters_cache") != null) {
+                const userNames = JSON.parse(window.localStorage.getItem("posters_cache"))
+                if (res.length != userNames.length) common.displayAlert("Network error and bad Cache")
+                else {
+                    for (let i in userNames) {
+                        listContainer.appendChild(renderItem(res[i], userNames[i]))
+                        containerSize++
+                    }
+                    listContainer.appendChild(common.template("end-template"))
+                    const more = document.getElementById("more")
+                    more.addEventListener("click", function(event) {
+                        event.preventDefault()
+                        more.remove()
+                        renderExtra(listContainer)
+                    })
+                }
+            } else common.displayAlert("Network error and no cache available") 
+        } else common.displayAlert(error.message) 
+    })
     const titleContainer = common.createLabel("div", "container rounded-4 shadow-sm mb-2 feed-container d-flex align-items-center justify-content-center")
     const title = common.createLabel("h5", "p-2 m-0", null, "Recently Updated Jobs")
     titleContainer.appendChild(title)
@@ -245,7 +267,9 @@ function renderExtra(listContainer) {
             throw new Error(res.error)
         }
         renderExtraList(res, listContainer)
-    }).catch(error => common.displayAlert(error.message))
+    }).catch(error => { 
+        error.message == "Failed to fetch" ? common.displayAlert("Cannot load more posts now due to a network error") : common.displayAlert(error.message)
+    })
 }
 
 function renderExtraList(res, listContainer) {
@@ -278,7 +302,9 @@ function renderExtraList(res, listContainer) {
             more.remove()
             renderExtra(listContainer)
         })
-    }).catch((error) => common.displayAlert(error.message))
+    }).catch((error) => {
+        error.message == "Failed to fetch" ? common.displayAlert("Cannot load user names now due to a network error") : common.displayAlert(error.message)
+    })
 }
 
 function renderItem(r, name) {
@@ -387,7 +413,9 @@ function renderItem(r, name) {
                 send.remove()
                 close.remove()
                 comment.disabled = ""
-            }).catch(error => common.displayAlert(error.message))
+            }).catch(error => {
+                error.message == "Failed to fetch" ? common.displayAlert("You can't send comments now due to a network error") : common.displayAlert(error.message)
+            })
         })
     })
 

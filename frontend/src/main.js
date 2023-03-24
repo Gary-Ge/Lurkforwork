@@ -87,24 +87,61 @@ function fetchMostRecentJob(action) {
         if (res.error != null) {
             throw new Error(res.error)
         }
-        if (res.length > 0) {
-            action(res[0].createdAt)
-        } else {
-            action("1970-01-01")
-        }
-    }).catch(error => { common.displayAlert(error.message) })
+        action(res)
+    }).catch(error => { 
+        if (error.message == "Failed to fetch") {
+            if (window.localStorage.getItem("jobs_cache") != null) {
+                action(JSON.parse(window.localStorage.getItem("jobs_cache")), false)
+            }
+        } else common.displayAlert(error.message) 
+    })
 }
 
-function setMostRecentJob(createdAt) {
-    console.log("aaa")
-    mostRecentDate = new Date(createdAt)
+function cacheRecentJobs(res) {
+    window.localStorage.setItem("jobs_cache", JSON.stringify(res))
 }
 
-function compareMostRecentJob(createdAt) {
-    console.log("bbb")
-    let recentDate = new Date(createdAt)
-    if (recentDate > mostRecentDate) {
-        sendNotification("A New Job", "A user you are watching has posted a new job, goto or refresh the main page to check it!")
+function cacheRecentJobPoster(res) {
+    const fetches = []
+    for (let r of res) {
+        fetches.push(new Promise(function (resolve, reject) {
+            fetch(`${common.URL}/user?userId=${r.creatorId}`, {
+                method: "GET",
+                headers: common.header()
+            }).then(res => res.json()).then(res => {
+                if (res.error != null) {
+                    throw new Error(res.error)
+                }
+                resolve(res)
+            }).catch (error => reject(error))
+        }))
     }
+    Promise.all(fetches).then(userRes => { 
+        if (userRes.length != res.length) throw new Error("Bad Result")
+        let userNames = []
+        for (let i in userRes) {
+            userNames.push(userRes[i].name) 
+        }
+        window.localStorage.setItem("posters_cache", JSON.stringify(userNames))
+    }).catch((error) => common.displayAlert(error.message))
+}
+
+function setMostRecentJob(res, cache=true) {
+    mostRecentDate = res.length > 0 ? new Date(res[0].createdAt) : new Date("1970-01-01")
+    if (cache) {
+        cacheRecentJobs(res)
+        cacheRecentJobPoster(res)
+    }
+}
+
+function compareMostRecentJob(res, cache=true) {
+    let recentDate = res.length > 0 ? new Date(res[0].createdAt) : new Date("1970-01-01")
+    if (recentDate.getTime() == mostRecentDate.getTime()) return
+    if (recentDate.getTime() > mostRecentDate.getTime()) sendNotification("A New Job", "A user you are watching has posted a new job, goto or refresh the main page to check it!")
     mostRecentDate = recentDate
+    if (cache) {
+        cacheRecentJobs(res)
+        cacheRecentJobPoster(res)
+    }
+
 }

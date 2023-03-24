@@ -29,7 +29,9 @@ export function renderProfile(id) {
             else return -1
         })
         renderJobs(sortedJobs, mine)
-    }).catch(error => renderNotFound(error.message))
+    }).catch(error => {
+        error.message == "Failed to fetch" ? renderNotFound("Cannot load user profiles now due to a network error") : renderNotFound(error.message)
+    })
 }
 
 function renderHeader(res, mine) {
@@ -152,7 +154,9 @@ function watch(id, email, button, watchees) {
         button.textContent = watch ? "Watched" : "Watch"
         button.className = watch ? "btn btn-primary p-1 border-2" : "btn btn-outline-primary p-1 border-2"
         updateWachees(id, watchees)
-    }).catch(error => common.displayAlert(error.message))
+    }).catch(error => { 
+        error.message == "Failed to fetch" ? common.displayAlert("You can't watch/unwatch users now due to a network error") : common.displayAlert(error.message)
+    })
 }
 
 function updateWachees(id, watchees) {
@@ -164,7 +168,9 @@ function updateWachees(id, watchees) {
             throw new Error(res.error)
         }
         watchees.textContent = `Watchees: ${res.watcheeUserIds.length}`
-    }).catch(error => common.displayAlert(error.message))
+    }).catch(error => {
+        error.message == "Failed to fetch" ? common.displayAlert("You can't watch/unwatch users now due to a network error") : common.displayAlert(error.message)
+    })
 }
 
 function displayWatchees(watcheeUserIds) {
@@ -221,13 +227,11 @@ function deleteJob(title, jobId) {
                 throw new Error(res.error)
             }
             location.reload()
-        }).catch(error => { common.displayAlert(error.message) })
+        }).catch(error => { 
+            error.message == "Failed to fetch" ? common.displayAlert("You can't delete jobs now due to a network error") : common.displayAlert(error.message)
+        })
     })
     document.getElementById("alert-footer").appendChild(confirm)
 
     modal.show()
-}
-
-function updateJob(jobId) {
-
 }
