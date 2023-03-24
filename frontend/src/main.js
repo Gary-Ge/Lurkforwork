@@ -89,6 +89,8 @@ function fetchMostRecentJob(action) {
         }
         if (res.length > 0) {
             action(res[0].createdAt)
+        } else {
+            action("1970-01-01")
         }
     }).catch(error => { common.displayAlert(error.message) })
 }
@@ -102,7 +104,7 @@ function compareMostRecentJob(createdAt) {
     console.log("bbb")
     let recentDate = new Date(createdAt)
     if (recentDate > mostRecentDate) {
-        mostRecentDate = recentDate;
         sendNotification("A New Job", "A user you are watching has posted a new job, goto or refresh the main page to check it!")
     }
+    mostRecentDate = recentDate
 }

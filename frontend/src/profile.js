@@ -198,7 +198,6 @@ function displayWatchees(watcheeUserIds) {
     }).catch((error) => common.displayAlert(error.message))
 
     new bootstrap.Modal(document.getElementById("modal"), {}).show()
-
 }
 
 function deleteJob(title, jobId) {

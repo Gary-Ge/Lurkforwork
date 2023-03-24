@@ -173,7 +173,13 @@
 </template>
 
 <template id="index-template">
-    <div class="container d-flex h-100 align-items-center justify-content-center flex-column" id="container"></div>
+    <div class="container d-flex h-100 align-items-center justify-content-center flex-column" id="container">
+        <div class="container watch-button-container">
+            <button type="button" class="btn btn-link btn-sm float-end" title="Watch Someone" id="popover">
+                <img src="assets/watch.svg" width="24" height="24">Watch Someone
+            </button>
+        </div>
+    </div>
 </template>
 
 <template id="profile-template">
@@ -227,6 +233,30 @@
     </div>
 </template>
 
+<template id="input-modal-template">
+    <div class="modal fade" id="input-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modal-template" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable h-50">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Watch Someone</h5>
+                </div>
+                <div class="modal-body">
+                    <form id="watch-form">
+                        <div class="input-group">
+                            <input type="text" class="form-control" placeholder="Email" id="watch-email">
+                            <button class="btn btn-primary" type="submit" id="watch-submit">Watch</button>
+                            <div class="invalid-feedback">Please input a valid email address</div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
 <template id="not-found-template">
     <div class="container h-100 d-flex flex-column align-items-center justify-content-center" id="container">
         <h1 id="message" class="text-center">Profile Not Found</h1>
@@ -243,6 +273,13 @@
 <template id="end-template">
     <div class="container d-flex align-items-center justify-content-center mt-2" id="end-container">
         <a class="text-decoration-none text-center" href="#" id="more">More...</a>
+    </div>
+</template>
+
+<template id="email-input-template">
+    <div class="input-group">
+        <input type="text" class="form-control" placeholder="Search">
+        <button class="btn btn-success" type="submit">Go</button>
     </div>
 </template>
 

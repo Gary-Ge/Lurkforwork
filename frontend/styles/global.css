@@ -21,6 +21,10 @@ div.feed-container {
     background-color: #ffffff;
 }
 
+div.watch-button-container {
+    max-width: 800px;
+}
+
 div.watchee-container {
     height: 10%;
 }

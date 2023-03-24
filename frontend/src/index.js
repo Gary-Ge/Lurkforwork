@@ -1,20 +1,54 @@
 import * as common from "./common.js";
-import { LikeDTO, CommentDTO } from "./entity.js";
-import { sendNotification } from "./main.js";
+import { LikeDTO, CommentDTO, WatchDTO } from "./entity.js";
+import { checkEmail } from "./login.js";
 
 let startIndex
 let containerSize
 let polling // Timer for live update
 
+function foo() {
+    const bodies = document.getElementsByClassName("popover-body")
+    if (bodies.length > 0) {
+        bodies[0].appendChild(common.template("email-input-template"))
+    }
+}
+
 export function render() {
     startIndex = 0
     containerSize = 0
+
     if (window.localStorage.getItem("token") == null) {
         window.location.hash = "#login"
         return
     }
     common.clearPage()
     document.body.appendChild(common.template("index-template"))
+
+    const popoverButton = document.getElementById("popover")
+    popoverButton.addEventListener("click", () => {
+        if (document.getElementById("input-modal") != null) {
+            document.getElementById("input-modal").remove()
+        }
+        document.getElementById("container").appendChild(common.template("input-modal-template"))
+        new bootstrap.Modal(document.getElementById("input-modal"), {}).show()
+        
+        const email = document.getElementById("watch-email")
+        email.addEventListener("blur", () => {
+            checkEmail(email, true)
+        })
+
+        const watchButton = document.getElementById("watch-submit")
+        watchButton.addEventListener("click", function(event) {
+            event.preventDefault()
+            watchByEmail(email)
+        })
+    })
+    // popoverButton.addEventListener("click", () => {
+    //     const bodies = document.getElementsByClassName("popover-body")
+    //     if (bodies.length > 0) {
+    //         bodies[0].appendChild(common.template("email-input-template"))
+    //     }
+    // })
 
 
     fetch(common.URL + "/job/feed?start=0", {
@@ -30,6 +64,23 @@ export function render() {
     startPolling()
 
     common.active("nav-home")
+}
+
+function watchByEmail(email) {
+    if (!checkEmail(email, true)) {
+        common.displayAlert("Please input a valid email address")
+        return
+    }
+    fetch(`${common.URL}/user/watch`, {
+        method: "PUT",
+        headers: common.header(),
+        body: JSON.stringify(new WatchDTO(email.value, true))
+    }).then(res => res.json()).then(res => {
+        if (res.error != null) {
+            throw new Error(res.error)
+        }
+        location.reload()
+    }).catch(error => common.displayAlert(error.message))
 }
 
 function startPolling() {

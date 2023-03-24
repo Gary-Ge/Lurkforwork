@@ -11,6 +11,8 @@ export function clearPage() {
     }
     const modals = document.getElementsByClassName("modal-backdrop")
     for (let item of modals) item.remove()
+    const popovers = document.getElementsByClassName("popover")
+    for (let item of popovers) item.remove()
 }
 
 export function template(id) {
