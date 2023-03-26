@@ -9,6 +9,25 @@ import { renderAdd, renderUpdateJob } from './addjob.js';
 let mostRecentDate = null
 let pollingRecent
 
+document.addEventListener("DOMContentLoaded", function() {
+    const navbarLinks = document.querySelectorAll(".navbar-nav li a");
+    navbarLinks.forEach(function(navbarLink) {
+        navbarLink.addEventListener("click", function() {
+        const navbarCollapse = document.querySelector(".navbar-collapse");
+        navbarCollapse.classList.remove("show");
+        });
+    });
+});
+
+// Add a click event listener to the document
+document.addEventListener('click', function (event) {
+    // Check if the clicked element is not part of the navbar and the navbar is open
+    if (!navbar.contains(event.target) && navbar.classList.contains('show')) {
+        // Hide the navbar
+        navbar.classList.remove('show');
+    }
+});
+
 export function sendNotification(title, content) {
     let notification 
     if (Notification.permission === 'default' || Notification.permission === 'undefined') {
@@ -89,6 +108,10 @@ function fetchMostRecentJob(action) {
         }
         action(res)
     }).catch(error => { 
+        if (error.message == "Invalid token") {
+            window.location.hash = "#login"
+            return
+        }
         if (error.message == "Failed to fetch") {
             if (window.localStorage.getItem("jobs_cache") != null) {
                 action(JSON.parse(window.localStorage.getItem("jobs_cache")), false)

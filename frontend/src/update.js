@@ -1,6 +1,6 @@
 import * as common from "./common.js"
 import { renderNotFound } from "./profile.js"
-import { checkEmail } from "./login.js"
+import { checkEmail, checkNotNull } from "./login.js"
 import { fileToDataUrl } from "./helpers.js"
 import { UpdateDTO } from "./entity.js"
 
@@ -19,19 +19,20 @@ export function renderUpdate() {
             throw new Error(res.error)
         }
         renderInfo(res)
-    }).catch(error => renderNotFound(error.message))
+    }).catch(error => {
+        error.message == "Failed to fetch" ? renderNotFound("Cannot update user profile now due to a network error") : renderNotFound(error.message)
+    })
 }
 
 function renderInfo(res) {
     const email = document.getElementById("email")
     email.value = res.email
     email.addEventListener("blur", () => { 
-        if (email.value == res.email || email.value == "" || email.value == null) {
+        if (email.value == res.email) {
             document.getElementById("valid-email").textContent = "Your email address will not change"
             common.valid(email)
-            return
         } else {
-            document.getElementById("valid-email").textContent = `Your new email address would be ${email.value}`
+            document.getElementById("valid-email").textContent = ""
             checkEmail(email) 
         }
     })
@@ -39,18 +40,18 @@ function renderInfo(res) {
     const name = document.getElementById("name")
     name.value = res.name
     name.addEventListener("blur", () => { 
-        if (name.value == res.name || name.value == "" || name.value == null) {
+        if (name.value == res.name) {
             document.getElementById("valid-name").textContent = "Your name will not change"
-        } else document.getElementById("valid-name").textContent = `Your new name would be ${name.value}`
-        common.valid(name)
+            common.valid(name)
+        } else {
+            document.getElementById("valid-name").textContent = ""
+            checkNotNull(name)
+        }
     })
     
     const password = document.getElementById("password")
     password.addEventListener("blur", () => { 
-        if (password.value == "" || password.value == null) {
-            document.getElementById("valid-password").textContent = "Your password will not change"
-        } else document.getElementById("valid-password").textContent = ""
-        common.valid(password)
+        checkNotNull(password)
     })
 
     const image = document.getElementById("image")
@@ -86,29 +87,30 @@ function parseFile(image) {
 }
 
 function update(res, email, name, password, image) {
-    console.log(common.newvalidEmail(email.value))
-    if (!common.newvalidEmail(email.value)) {
-        common.invalid(email)
+    if (!(checkEmail(email))) {
+        common.displayAlert("Please input a valid email address")
+        return
+    }
+    if (!(checkNotNull(name))) {
+        common.displayAlert("Please input a valid name")
+        return
+    }
+    if (!(checkNotNull(password))) {
+        common.displayAlert("Please input a password")
         return
     }
     if (image.classList.contains("is-invalid")) {
         common.displayAlert(document.getElementById("invalid-image").textContent)
         return
     }
-    if (email.value == res.email || email.value == "" || email.value == null) {
-        email=""
-    }
-    if (password.value == res.password || password.value == "" || password.value == null) {
-        password=""
-    }
     fetch(`${common.URL}/user`, {
         method: "PUT",
         headers: common.header(),
-        body: JSON.stringify(new UpdateDTO(email.value, password.value, name.value, image.name))
+        body: JSON.stringify(new UpdateDTO(email.value == res.email ? "" : email.value, password.value, name.value, image.name))
     }).then(res => res.json()).then(res => {
         if (res.error != null) {
             throw new Error(res.error)
         }
         window.location.hash = "#profile"
-    }).catch(error => common.displayAlert(error.message))
+    }).catch(error => error.message == "Failed to fetch" ? common.displayAlert("You can't update user profile now due to a network error") : common.displayAlert(error.message))
 }

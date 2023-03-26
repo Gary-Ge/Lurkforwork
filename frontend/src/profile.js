@@ -7,6 +7,11 @@ export function renderProfile(id) {
         return
     }
     let mine = id == common.getUserId() ? true : false
+    if (mine) {
+        common.active("nav-profile")
+    } else {
+        common.inactive()
+    }
 
     common.clearPage()
     document.body.appendChild(common.template("profile-template"))
@@ -48,7 +53,7 @@ function renderHeader(res, mine) {
     const a = common.createALabel("text-decoration-none", "#", `Watchees: ${res.watcheeUserIds.length}`)
     a.addEventListener("click", function(event) {
         event.preventDefault()
-        displayWatchees(res.watcheeUserIds)
+        getWatcheeIds(res.id)
     })
     p.appendChild(a)
     p.appendChild(document.createElement("br"))
@@ -173,6 +178,18 @@ function updateWachees(id, watchees) {
     })
 }
 
+function getWatcheeIds(id) {
+    fetch(`${common.URL}/user?userId=${id}`, {
+        method: "GET",
+        headers: common.header()
+    }).then(res => res.json()).then(res => {
+        if (res.error != null) {
+            throw new Error(res.error)
+        }
+        displayWatchees(res.watcheeUserIds)
+    }) 
+}
+
 function displayWatchees(watcheeUserIds) {
     if (document.getElementById("modal") != null) {
         document.getElementById("modal").remove()
@@ -201,7 +218,7 @@ function displayWatchees(watcheeUserIds) {
             modalBody.appendChild(watchee)
             modalBody.appendChild(document.createElement("br"))
         }
-    }).catch((error) => common.displayAlert(error.message))
+    }).catch((error) => error.message == "Failed to fetch" ? common.displayAlert("You can't see the watchee details now due to a network error") : common.displayAlert(error.message))
 
     new bootstrap.Modal(document.getElementById("modal"), {}).show()
 }

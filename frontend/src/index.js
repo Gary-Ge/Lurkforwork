@@ -5,10 +5,12 @@ import { checkEmail } from "./login.js";
 let startIndex
 let containerSize
 let polling // Timer for live update
+let throttler
 
 export function render() {
     startIndex = 0
     containerSize = 0
+    throttler = null
 
     if (window.localStorage.getItem("token") == null) {
         window.location.hash = "#login"
@@ -77,6 +79,22 @@ function watchByEmail(email) {
     })
 }
 
+function throttle(func, delay) {
+    var timer = null
+
+    return function(argument) {
+        if (!timer) {
+            if (document.getElementById("more") != null) {
+                document.getElementById("more").remove()
+            }
+            func(argument)
+            timer = setTimeout(() => {
+                timer = null
+            }, delay)
+        }
+    }
+}
+
 function startPolling() {
     polling = setInterval(poll, 3000)
 }
@@ -133,7 +151,11 @@ function poll() {
             }
         }
     }).catch(error => { 
-        if (error.message != "Failed to fetch") common.displayAlert(error.message) 
+        if (error.message == "Invalid token") {
+            window.location.hash = "#login"
+            return
+        }
+        else if (error.message != "Failed to fetch") common.displayAlert(error.message) 
     })
 }
 
@@ -250,10 +272,10 @@ function renderList(res) {
 
     listContainer.addEventListener("scroll", () => {
         if (listContainer.scrollHeight - (listContainer.clientHeight + listContainer.scrollTop) <= 1) {
-            if (document.getElementById("more") != null) {
-                document.getElementById("more").remove()
+            if (!throttler) {
+                throttler = throttle(renderExtra, 150)
             }
-            renderExtra(listContainer)
+            throttler(listContainer)
         }
     })
 }

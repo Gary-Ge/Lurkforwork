@@ -54,7 +54,7 @@ export function renderUpdateJob(id) {
             }
         }
         if (!found) throw new Error("Job not found or the job is not posted by yourself.")
-    }).catch(error => { renderNotFound(error.message) })
+    }).catch(error => { error.message == "Failed to fetch" ? renderNotFound("Cannot update job information now due to a network error") : renderNotFound(error.message) })
 }
 
 function renderInfo(res, id) {
@@ -170,7 +170,7 @@ function postJob(title, description, start, image) {
             throw new Error(res.error)
         }
         window.location.hash = "#profile"
-    }).catch(error => { common.displayAlert(error.message) })
+    }).catch(error => { error.message == "Failed to fetch" ? common.displayAlert("You can't post job now due to a network error") : common.displayAlert(error.message) })
 }
 
 function updateJob(id, title, description, start, image) {
@@ -196,7 +196,7 @@ function updateJob(id, title, description, start, image) {
             throw new Error(res.error)
         }
         window.location.hash = "#profile"
-    }).catch(error => { common.displayAlert(error.message) })
+    }).catch(error => { error.message == "Failed to fetch" ? common.displayAlert("You can't update job now due to a network error") : common.displayAlert(error.message) })
 }
 
 function convertDateToUTC(date) { 

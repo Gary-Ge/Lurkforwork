@@ -117,6 +117,12 @@ export function active(id) {
     login.textContent = getToken() == null ? "Login" : "Logout"
 }
 
+export function inactive() {
+    for (let element of document.getElementsByClassName("nav-link")) {
+        element.classList.remove("active")
+    }
+}
+
 export function createALabel(className, href, textContent, id) {
     const label = document.createElement("a")
     if (className != null) label.className = className;

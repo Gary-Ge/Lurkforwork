@@ -92,7 +92,7 @@ function login(email, password) {
         common.saveToken(res.token, res.userId)
         window.location.hash = ""
     }).catch(error => {
-        common.displayAlert(error.message)
+        error.message == "Failed to fetch" ? common.displayAlert("You can't sign in now due to a network error") : common.displayAlert(error.message)
     })
 }
 
@@ -125,5 +125,5 @@ function register(email, name, password, confirmPassword) {
         }
         common.saveToken(res.token, res.userId)
         window.location.hash = ""
-    }).catch(error => common.displayAlert(error.message))
+    }).catch(error => error.message == "Failed to fetch" ? common.displayAlert("You can't sign up now due to a network error") : common.displayAlert(error.message))
 }
