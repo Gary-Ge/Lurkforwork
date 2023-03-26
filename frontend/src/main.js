@@ -44,7 +44,7 @@ export function sendNotification(title, content) {
     } else {
         notification = new Notification(title, {
             body: content,
-            icon: "assets/4.svg"
+            icon: "assets/default-job-icon.svg"
         })
     }
 }
