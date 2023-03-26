@@ -243,7 +243,7 @@ function deleteJob(title, jobId) {
             if (res.error != null) {
                 throw new Error(res.error)
             }
-            location.reload()
+            renderProfile(common.getUserId())
         }).catch(error => { 
             error.message == "Failed to fetch" ? common.displayAlert("You can't delete jobs now due to a network error") : common.displayAlert(error.message)
         })

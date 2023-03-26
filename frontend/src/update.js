@@ -4,6 +4,7 @@ import { checkEmail, checkNotNull } from "./login.js"
 import { fileToDataUrl } from "./helpers.js"
 import { UpdateDTO } from "./entity.js"
 
+// Render the update page
 export function renderUpdate() {
     if (window.localStorage.getItem("token") == null) {
         window.location.hash = "#login"
@@ -11,6 +12,8 @@ export function renderUpdate() {
     }
     common.clearPage()
     document.body.appendChild(common.template("update-profile-template"))
+
+    // Get the original information of user
     fetch(`${common.URL}/user?userId=${common.getUserId()}`, {
         method: "GET",
         headers: common.header()
@@ -24,9 +27,11 @@ export function renderUpdate() {
     })
 }
 
+// Display the original information in input areas
 function renderInfo(res) {
     const email = document.getElementById("email")
     email.value = res.email
+    // For each input area, check validity after inputting/modification
     email.addEventListener("blur", () => { 
         if (email.value == res.email) {
             document.getElementById("valid-email").textContent = "Your email address will not change"
@@ -64,6 +69,7 @@ function renderInfo(res) {
     })
 }
 
+// Parse the uploaded file to base64 string
 function parseFile(image) {
     const file = image.files[0]
 
@@ -86,7 +92,9 @@ function parseFile(image) {
     })
 }
 
+// Update the user profile
 function update(res, email, name, password, image) {
+    // Check the validity of input
     if (!(checkEmail(email))) {
         common.displayAlert("Please input a valid email address")
         return

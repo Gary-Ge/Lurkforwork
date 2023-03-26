@@ -1,6 +1,7 @@
 import * as common from "./common.js"
 import { LoginDTO, RegisterDTO } from "./entity.js"
 
+// Render Login Page
 export function renderLogin() {
     common.clearPage()
     common.removeToken()
@@ -9,6 +10,7 @@ export function renderLogin() {
     common.active("nav-login")
 
     // Every time the login page is rendered, register all the listeners
+    // Check validity after inputting
     const email = document.getElementById("email")
     email.addEventListener("blur", () => { checkEmail(email, true) })
     const password = document.getElementById("password")
@@ -19,6 +21,7 @@ export function renderLogin() {
     })
 }
 
+// Render Register Page
 export function renderRegister() {
     common.clearPage()
     document.body.appendChild(common.template("register-template"))
@@ -26,6 +29,7 @@ export function renderRegister() {
     common.active("nav-register")
 
     // Every time the register page is rendered, register all the listeners
+    // Check validity after inputting
     const email = document.getElementById("email")
     email.addEventListener("blur", () => { checkEmail(email) })
     const name = document.getElementById("name")

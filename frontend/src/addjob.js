@@ -4,6 +4,7 @@ import { fileToDataUrl } from "./helpers.js"
 import { PostJobDTO, UpdateJobDTO } from "./entity.js"
 import { renderNotFound } from "./profile.js"
 
+// Render the post job page
 export function renderAdd() {
     if (window.localStorage.getItem("token") == null) {
         window.location.hash = "#login"
@@ -12,6 +13,7 @@ export function renderAdd() {
     common.clearPage()
     document.body.appendChild(common.template("add-job-template"))
 
+    // Check the validity of input after inputting
     const title = document.getElementById("title")
     title.addEventListener("blur", () => { checkNotNull(title) })
     const description = document.getElementById("description")
@@ -29,6 +31,7 @@ export function renderAdd() {
     })
 }
 
+// Render update job page
 export function renderUpdateJob(id) {
     if (window.localStorage.getItem("token") == null) {
         window.location.hash = "#login"
@@ -39,6 +42,7 @@ export function renderUpdateJob(id) {
 
     document.getElementById("form-title").textContent = "Update Job"
 
+    // Display the original job information in input areas
     fetch(`${common.URL}/user?userId=${common.getUserId()}`, {
         method: "GET",
         headers: common.header()
@@ -57,6 +61,7 @@ export function renderUpdateJob(id) {
     }).catch(error => { error.message == "Failed to fetch" ? renderNotFound("Cannot update job information now due to a network error") : renderNotFound(error.message) })
 }
 
+// Display the original job information in input areas
 function renderInfo(res, id) {
     const title = document.getElementById("title")
     title.value = res.title
@@ -70,6 +75,7 @@ function renderInfo(res, id) {
         }
     })
 
+    // Check validity after inputting
     const description = document.getElementById("description")
     description.value = res.description
     description.addEventListener("blur", () => { 
@@ -108,6 +114,7 @@ function renderInfo(res, id) {
     })
 }
 
+// Change the uploaded image to base64 string
 function parseFile(image, origin=null) {
     const file = image.files[0]
 
@@ -130,6 +137,7 @@ function parseFile(image, origin=null) {
     })
 }
 
+// Check if the date is valid
 function checkDate(start) {
     if (start.value === "") {
         document.getElementById("invalid-start").textContent = "Please choose a valid start date"
@@ -147,6 +155,7 @@ function checkDate(start) {
     return true
 }
 
+// Post a new job
 function postJob(title, description, start, image) {
     if (!checkNotNull(title)) {
         common.displayAlert("Please input a title")
@@ -173,6 +182,7 @@ function postJob(title, description, start, image) {
     }).catch(error => { error.message == "Failed to fetch" ? common.displayAlert("You can't post job now due to a network error") : common.displayAlert(error.message) })
 }
 
+// Update a job
 function updateJob(id, title, description, start, image) {
     if (!checkNotNull(title)) {
         common.displayAlert("Please input a title")

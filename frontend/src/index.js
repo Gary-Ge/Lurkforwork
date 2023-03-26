@@ -7,6 +7,7 @@ let containerSize
 let polling // Timer for live update
 let throttler
 
+// Render the main page
 export function render() {
     startIndex = 0
     containerSize = 0
@@ -19,6 +20,7 @@ export function render() {
     common.clearPage()
     document.body.appendChild(common.template("index-template"))
 
+    // Setup the button for watching user by email
     const popoverButton = document.getElementById("popover")
     popoverButton.addEventListener("click", () => {
         if (document.getElementById("input-modal") != null) {
@@ -73,12 +75,14 @@ function watchByEmail(email) {
         if (res.error != null) {
             throw new Error(res.error)
         }
-        location.reload()
+        stopPolling()
+        render()
     }).catch(error => { 
         error.message == "Failed to fetch" ? common.displayAlert("You can't watch users now due to a network error") : common.displayAlert(error.message)
     })
 }
 
+// Throttle function for avoiding call render function too many times when scrolling
 function throttle(func, delay) {
     var timer = null
 
@@ -95,6 +99,7 @@ function throttle(func, delay) {
     }
 }
 
+// Polling the server for any updating in like and comments
 function startPolling() {
     polling = setInterval(poll, 3000)
 }
@@ -159,6 +164,7 @@ function poll() {
     })
 }
 
+// After user liking a job, update the number of likers immediately
 function liking(id, creatorId, image, button, likeCount) {
     let like = button.name == "liked" ? false : true
     fetch(`${common.URL}/job/like`, {
@@ -280,6 +286,7 @@ function renderList(res) {
     })
 }
 
+// Infinite Scroll, load more jobs dynamically
 function renderExtra(listContainer) {
     fetch(common.URL + `/job/feed?start=${startIndex}`, {
         method: "GET",
@@ -331,7 +338,7 @@ function renderExtraList(res, listContainer) {
 
 function renderItem(r, name) {
     // Create the p label containing all the contents (except the image) of a job
-    const p = common.createLabel("p", "small p-3 m-0")
+    const p = common.createLabel("p", "small p-3 m-0 w-100")
 
     // Create the a label containing the name of the poster
     const poster = common.createALabel("text-decoration-none", `#profile=${r.creatorId}`, `@${name}`)

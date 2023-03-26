@@ -9,6 +9,7 @@ import { renderAdd, renderUpdateJob } from './addjob.js';
 let mostRecentDate = null
 let pollingRecent
 
+// Setup nav bar
 document.addEventListener("DOMContentLoaded", function() {
     const navbarLinks = document.querySelectorAll(".navbar-nav li a");
     navbarLinks.forEach(function(navbarLink) {
@@ -28,6 +29,7 @@ document.addEventListener('click', function (event) {
     }
 });
 
+// Send notifications
 export function sendNotification(title, content) {
     let notification 
     if (Notification.permission === 'default' || Notification.permission === 'undefined') {
@@ -35,7 +37,7 @@ export function sendNotification(title, content) {
             if (result === 'granted') {
                 notification = new Notification(title, {
                     body: content,
-                    icon: "assets/4.svg"
+                    icon: "assets/default-job-icon.svg"
                 })
             }
         })
@@ -47,12 +49,14 @@ export function sendNotification(title, content) {
     }
 }
 
+// Ask for a permission to sending notifications
 function requestNotificationPermission() {
     Notification.requestPermission(function(result) {
         return result
     })
 }
 
+// Parse different URL
 window.addEventListener("hashchange", displayPage)
 requestNotificationPermission()
 displayPage()
@@ -85,6 +89,7 @@ function displayPage() {
             render()
             break
     }
+    // After displaying a page, start a timer polling the server for newly posted jobs
     if (common.getToken() != null) {
         if (mostRecentDate == null) {
             fetchMostRecentJob(setMostRecentJob)
@@ -94,6 +99,7 @@ function displayPage() {
     }
 }
 
+// Polling the server for newly posted jobs
 function pollingRecentJobs() {
     fetchMostRecentJob(compareMostRecentJob)
 }
@@ -120,10 +126,12 @@ function fetchMostRecentJob(action) {
     })
 }
 
+// Cache the jobs into local storage
 function cacheRecentJobs(res) {
     window.localStorage.setItem("jobs_cache", JSON.stringify(res))
 }
 
+// Cache the poster's names into local storage
 function cacheRecentJobPoster(res) {
     const fetches = []
     for (let r of res) {
@@ -159,6 +167,7 @@ function setMostRecentJob(res, cache=true) {
 
 function compareMostRecentJob(res, cache=true) {
     let recentDate = res.length > 0 ? new Date(res[0].createdAt) : new Date("1970-01-01")
+    // Only need to update the cache when one or more new jobs are posted
     if (recentDate.getTime() == mostRecentDate.getTime()) return
     if (recentDate.getTime() > mostRecentDate.getTime()) sendNotification("A New Job", "A user you are watching has posted a new job, goto or refresh the main page to check it!")
     mostRecentDate = recentDate

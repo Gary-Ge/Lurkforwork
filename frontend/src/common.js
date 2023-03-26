@@ -15,21 +15,25 @@ export function clearPage() {
     for (let item of popovers) item.remove()
 }
 
+// Parse a template to DOM
 export function template(id) {
     const template = document.getElementById(id)
     return template.content.cloneNode(true)
 }
 
+// Make a input area invalid
 export function invalid(input) {
     input.classList.remove("is-valid")
     input.classList.add("is-invalid")
 }
 
+// Make a input area valid
 export function valid(input) {
     input.classList.remove("is-invalid")
     input.classList.add("is-valid")
 }
 
+// Check the validity of email address
 export function validEmail(email) {
     return /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)
 }
@@ -37,7 +41,7 @@ export function newvalidEmail(email) {
     return (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email))||email == ""
 }
 
-
+// Display an error popup on the screen
 export function displayAlert(content) {
     if (document.getElementById("alert") != null) {
         document.getElementById("alert").remove()
@@ -47,6 +51,7 @@ export function displayAlert(content) {
     new bootstrap.Modal(document.getElementById("alert"), {}).show()
 }
 
+// Display an modal containing contents on the screen
 export function displayModal(jobId, creatorId, like=true) {
     if (document.getElementById("modal") != null) {
         document.getElementById("modal").remove()
@@ -87,6 +92,7 @@ export function displayModal(jobId, creatorId, like=true) {
     })
 }
 
+// Save token and userId to local storage
 export function saveToken(token, userId) {
     window.localStorage.setItem("token", token)
     window.localStorage.setItem("userId", userId)
@@ -104,6 +110,7 @@ export function removeToken() {
     window.localStorage.removeItem("token")
     window.localStorage.removeItem("userId")
 }
+
 
 export function header(auth=true) {
     return auth ? { "Content-Type": "application/json", "Authorization": getToken() } : { "Content-Type": "application/json" }
@@ -123,6 +130,7 @@ export function inactive() {
     }
 }
 
+// Create different labels
 export function createALabel(className, href, textContent, id) {
     const label = document.createElement("a")
     if (className != null) label.className = className;
@@ -150,6 +158,7 @@ export function createImage(src, width, height, id, className) {
     return label
 }
 
+// Re-Format a given date string to a specific format
 export function dateFormat(date, duration=false) {
     const dateObj = new Date(date)
     if (!duration) return `${dateObj.getDate().toString().padStart(2, "0")}/${(dateObj.getMonth() + 1).toString().padStart(2, "0")}/${dateObj.getFullYear()}`
