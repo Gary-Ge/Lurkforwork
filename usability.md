@@ -94,6 +94,8 @@ Will be working as described in the specification. For large screen, if the firs
 
 Will be working as described in the specification. On feed page, the number of likers and commenters would be live updated. If you are watching name of likers or comments in a popup, the content there would also be live updated.
 
+According to https://edstem.org/au/courses/10892/discussion/1235375, only the first 5 posts can be live updated
+
 **Important: The request frequency to the server is once every three seconds, which means you need to wait up to three seconds to see the changes.**
 
 #### 2.6.3. Push Notifications
